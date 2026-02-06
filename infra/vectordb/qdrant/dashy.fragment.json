@@ -1,0 +1,7 @@
+{
+  "name": "Qdrant",
+  "icon": "fas fa-vector-square",
+  "url": "http://qdrant.127.0.0.1.traefik.me:9000/dashboard",
+  "category": "AI",
+  "tags": ["vectordb", "embeddings", "rag"]
+}

@@ -1,0 +1,46 @@
+services:
+  mariadb:
+    image: mariadb:${MARIADB_VERSION:-11}
+    container_name: mariadb-infra
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-admin123}
+      MYSQL_USER: ${MYSQL_USER:-admin}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-admin123}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-default}
+    volumes:
+      - ../../../volumes/mariadb:/var/lib/mysql
+    ports:
+      - "${EXPOSE_MYSQL_PORT:-127.0.0.1:3306}:3306"
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin-infra
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mariadb
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-admin123}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.phpmyadmin.rule=Host(`phpmyadmin.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+volumes:
+  mariadb-data:
+
+networks:
+  infra-network:
+    external: true

@@ -1,0 +1,23 @@
+services:
+  calcom:
+    image: calcom/cal.com:${CALCOM_VERSION:-latest}
+    container_name: calcom-infra
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://${ADMIN_USER:-admin}:${ADMIN_PASSWORD:-admin123}@postgres-infra:5432/${CALCOM_DB:-calcom}
+      - NEXTAUTH_SECRET=calcom-nextauth-secret-change-me
+      - CALENDSO_ENCRYPTION_KEY=calcom-encryption-key-change
+      - NEXT_PUBLIC_WEBAPP_URL=http://cal.127.0.0.1.traefik.me:9000
+      - NEXT_PUBLIC_API_V2_URL=http://cal.127.0.0.1.traefik.me:9000/api/v2
+      - NEXTAUTH_URL=http://cal.127.0.0.1.traefik.me:9000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.calcom.rule=Host(`cal.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.calcom.entrypoints=web"
+      - "traefik.http.services.calcom.loadbalancer.server.port=3000"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

@@ -1,0 +1,7 @@
+{
+  "name": "Dashy",
+  "icon": "fas fa-th",
+  "url": "http://dashy.127.0.0.1.traefik.me:9000",
+  "category": "CORE",
+  "tags": ["dashboard", "home"]
+}

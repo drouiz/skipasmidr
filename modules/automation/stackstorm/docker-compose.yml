@@ -1,0 +1,26 @@
+# StackStorm es complejo. Esta es una configuracion simplificada.
+# Para produccion, usar: https://docs.stackstorm.com/install/docker.html
+
+services:
+  stackstorm:
+    image: stackstorm/stackstorm:${STACKSTORM_VERSION:-latest}
+    container_name: stackstorm-infra
+    restart: unless-stopped
+    environment:
+      - ST2_AUTH_USERNAME=${ST2_USER:-st2admin}
+      - ST2_AUTH_PASSWORD=${ST2_PASSWORD:-admin123}
+    volumes:
+      - stackstorm-data:/opt/stackstorm
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stackstorm.rule=Host(`stackstorm.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.stackstorm.loadbalancer.server.port=443"
+    networks:
+      - infra-network
+
+volumes:
+  stackstorm-data:
+
+networks:
+  infra-network:
+    external: true

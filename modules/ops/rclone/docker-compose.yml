@@ -1,0 +1,23 @@
+services:
+  rclone:
+    image: rclone/rclone:${RCLONE_VERSION:-latest}
+    container_name: rclone-infra
+    restart: unless-stopped
+    command: rcd --rc-web-gui --rc-addr :5572 --rc-user admin --rc-pass admin123
+    volumes:
+      - rclone-config:/config/rclone
+      - rclone-data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rclone.rule=Host(`rclone.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.rclone.loadbalancer.server.port=5572"
+    networks:
+      - infra-network
+
+volumes:
+  rclone-config:
+  rclone-data:
+
+networks:
+  infra-network:
+    external: true

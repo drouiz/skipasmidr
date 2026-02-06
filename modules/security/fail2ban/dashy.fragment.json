@@ -1,0 +1,7 @@
+{
+  "name": "Fail2Ban",
+  "icon": "fas fa-ban",
+  "url": "#",
+  "category": "SECURITY",
+  "tags": ["security", "firewall", "brute-force"]
+}

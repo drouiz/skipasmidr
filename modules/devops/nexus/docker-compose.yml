@@ -1,0 +1,20 @@
+services:
+  nexus:
+    image: sonatype/nexus3:${NEXUS_VERSION:-latest}
+    container_name: nexus-infra
+    restart: unless-stopped
+    environment:
+      - INSTALL4J_ADD_VM_PARAMS=-Xms512m -Xmx2g -XX:MaxDirectMemorySize=2g
+    volumes:
+      - ../../../volumes/nexus:/nexus-data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nexus.rule=Host(`nexus.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.nexus.entrypoints=web"
+      - "traefik.http.services.nexus.loadbalancer.server.port=8081"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

@@ -1,0 +1,48 @@
+# Harbor requires more complex setup - using goharbor/harbor-core
+# For full Harbor, download installer from https://github.com/goharbor/harbor/releases
+services:
+  harbor-registry:
+    image: goharbor/registry-photon:${HARBOR_VERSION:-v2.10.0}
+    container_name: harbor-registry-infra
+    restart: unless-stopped
+    volumes:
+      - ../../../volumes/harbor/registry:/storage
+    networks:
+      - infra-network
+
+  harbor-core:
+    image: goharbor/harbor-core:${HARBOR_VERSION:-v2.10.0}
+    container_name: harbor-core-infra
+    restart: unless-stopped
+    environment:
+      - CORE_KEY=change-me-core-key
+      - _REDIS_URL_CORE=redis://redis-infra:6379/0
+      - SYNC_REGISTRY=false
+      - CHART_CACHE_DRIVER=redis
+      - _REDIS_URL_REG=redis://redis-infra:6379/1
+      - PORT=8080
+      - LOG_LEVEL=info
+      - EXT_ENDPOINT=http://harbor.127.0.0.1.traefik.me:9000
+      - DATABASE_TYPE=postgresql
+      - POSTGRESQL_HOST=postgres-infra
+      - POSTGRESQL_PORT=5432
+      - POSTGRESQL_DATABASE=${HARBOR_DB:-harbor}
+      - POSTGRESQL_USERNAME=${POSTGRES_USER:-admin}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD:-admin123}
+      - POSTGRESQL_SSLMODE=disable
+      - REGISTRY_URL=http://harbor-registry-infra:5000
+      - TOKEN_SERVICE_URL=http://harbor-core-infra:8080/service/token
+      - HARBOR_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+    depends_on:
+      - harbor-registry
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.harbor.rule=Host(`harbor.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.harbor.entrypoints=web"
+      - "traefik.http.services.harbor.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

@@ -1,0 +1,23 @@
+services:
+  chroma:
+    image: chromadb/chroma:${CHROMA_VERSION:-latest}
+    container_name: chroma-infra
+    restart: unless-stopped
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+    volumes:
+      - ../../../volumes/chroma:/chroma/chroma
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chroma.rule=Host(`chroma.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.chroma.loadbalancer.server.port=8000"
+    networks:
+      - infra-network
+
+volumes:
+  chroma-data:
+
+networks:
+  infra-network:
+    external: true

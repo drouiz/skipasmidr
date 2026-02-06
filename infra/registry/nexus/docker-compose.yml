@@ -1,0 +1,25 @@
+services:
+  nexus:
+    image: sonatype/nexus3:${NEXUS_VERSION:-latest}
+    container_name: nexus-infra
+    restart: unless-stopped
+    volumes:
+      - nexus-data:/nexus-data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nexus.rule=Host(`nexus.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.nexus.loadbalancer.server.port=8081"
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/service/rest/v1/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  nexus-data:
+
+networks:
+  infra-network:
+    external: true

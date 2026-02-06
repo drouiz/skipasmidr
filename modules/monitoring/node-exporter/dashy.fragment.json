@@ -1,0 +1,7 @@
+{
+  "name": "Node Exporter",
+  "icon": "fas fa-server",
+  "url": "http://node-exporter.127.0.0.1.traefik.me:9000/metrics",
+  "category": "MONITORING",
+  "tags": ["metrics", "system", "prometheus"]
+}

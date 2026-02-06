@@ -1,0 +1,7 @@
+{
+  "name": "Budibase",
+  "icon": "fas fa-cubes",
+  "url": "http://budibase.127.0.0.1.traefik.me:9000",
+  "category": "LOWCODE",
+  "tags": ["lowcode", "apps", "internal-tools"]
+}

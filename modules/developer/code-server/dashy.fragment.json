@@ -1,0 +1,7 @@
+{
+  "name": "Code Server",
+  "icon": "fas fa-code",
+  "url": "http://code.127.0.0.1.traefik.me:9000",
+  "category": "DEVELOPER",
+  "tags": ["ide", "vscode", "development", "editor"]
+}

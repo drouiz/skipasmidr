@@ -1,0 +1,42 @@
+services:
+  openldap:
+    image: osixia/openldap:${OPENLDAP_VERSION:-latest}
+    container_name: openldap-infra
+    restart: unless-stopped
+    environment:
+      - LDAP_ORGANISATION=${LDAP_ORGANISATION:-InfraOrg}
+      - LDAP_DOMAIN=${LDAP_DOMAIN:-infra.local}
+      - LDAP_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - LDAP_CONFIG_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - LDAP_READONLY_USER=true
+      - LDAP_READONLY_USER_USERNAME=readonly
+      - LDAP_READONLY_USER_PASSWORD=${ADMIN_PASSWORD:-admin123}
+    volumes:
+      - ../../../volumes/openldap/data:/var/lib/ldap
+      - ../../../volumes/openldap/config:/etc/ldap/slapd.d
+    ports:
+      - "389:389"
+      - "636:636"
+    networks:
+      - infra-network
+
+  phpldapadmin:
+    image: osixia/phpldapadmin:${PHPLDAPADMIN_VERSION:-latest}
+    container_name: phpldapadmin-infra
+    restart: unless-stopped
+    environment:
+      - PHPLDAPADMIN_LDAP_HOSTS=openldap-infra
+      - PHPLDAPADMIN_HTTPS=false
+    depends_on:
+      - openldap
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ldapadmin.rule=Host(`ldap.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.ldapadmin.entrypoints=web"
+      - "traefik.http.services.ldapadmin.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

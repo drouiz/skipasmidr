@@ -1,0 +1,23 @@
+services:
+  nocodb:
+    image: nocodb/nocodb:${NOCODB_VERSION:-latest}
+    container_name: nocodb-infra
+    restart: unless-stopped
+    environment:
+      NC_DB: "pg://postgres-infra:5432?u=${POSTGRES_USER:-admin}&p=${POSTGRES_PASSWORD:-admin123}&d=${NOCODB_DB:-nocodb}"
+      NC_AUTH_JWT_SECRET: ${NOCODB_SECRET:-change-me-secret-key}
+    volumes:
+      - nocodb-data:/usr/app/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nocodb.rule=Host(`nocodb.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.nocodb.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+volumes:
+  nocodb-data:
+
+networks:
+  infra-network:
+    external: true

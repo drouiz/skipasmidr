@@ -1,0 +1,7 @@
+{
+  "name": "AdGuard Home",
+  "icon": "fas fa-ad",
+  "url": "http://adguard.127.0.0.1.traefik.me:9000",
+  "category": "SECURITY",
+  "tags": ["dns", "adblock", "privacy"]
+}

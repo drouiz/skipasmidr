@@ -1,0 +1,62 @@
+# External Services Links
+# These will appear in your dashboard(s)
+
+links:
+  # Cloud Providers
+  - name: Digital Ocean
+    url: https://cloud.digitalocean.com
+    icon: fas fa-cloud
+    description: Digital Ocean Dashboard
+    tags: [cloud, hosting]
+
+  - name: AWS Console
+    url: https://console.aws.amazon.com
+    icon: fab fa-aws
+    description: Amazon Web Services
+    tags: [cloud, aws]
+
+  # Version Control
+  - name: GitHub
+    url: https://github.com
+    icon: fab fa-github
+    description: GitHub repositories
+    tags: [git, code]
+
+  - name: GitLab
+    url: https://gitlab.com
+    icon: fab fa-gitlab
+    description: GitLab repositories
+    tags: [git, code]
+
+  # Communication
+  - name: Gmail
+    url: https://mail.google.com
+    icon: fas fa-envelope
+    description: Google Mail
+    tags: [email, communication]
+
+  - name: Slack
+    url: https://slack.com
+    icon: fab fa-slack
+    description: Team communication
+    tags: [chat, communication]
+
+  # Productivity
+  - name: Notion
+    url: https://notion.so
+    icon: fas fa-book
+    description: Notes and documentation
+    tags: [docs, notes]
+
+  - name: Google Drive
+    url: https://drive.google.com
+    icon: fab fa-google-drive
+    description: Cloud storage
+    tags: [storage, files]
+
+  # Add your own links below:
+  # - name: My Service
+  #   url: https://example.com
+  #   icon: fas fa-link
+  #   description: Description here
+  #   tags: [custom]

@@ -1,0 +1,24 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:${VAULTWARDEN_VERSION:-latest}
+    container_name: vaultwarden-infra
+    restart: unless-stopped
+    environment:
+      - DOMAIN=http://vaultwarden.127.0.0.1.traefik.me:9000
+      - SIGNUPS_ALLOWED=true
+      - ADMIN_TOKEN=${VAULTWARDEN_ADMIN_TOKEN:-admin123}
+    volumes:
+      - vaultwarden-data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+
+volumes:
+  vaultwarden-data:
+
+networks:
+  infra-network:
+    external: true

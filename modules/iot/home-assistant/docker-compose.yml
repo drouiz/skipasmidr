@@ -1,0 +1,22 @@
+services:
+  home-assistant:
+    image: ghcr.io/home-assistant/home-assistant:${HASS_VERSION:-stable}
+    container_name: home-assistant-infra
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - hass-config:/config
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.hass.rule=Host(`hass.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.hass.loadbalancer.server.port=8123"
+    networks:
+      - infra-network
+
+volumes:
+  hass-config:
+
+networks:
+  infra-network:
+    external: true

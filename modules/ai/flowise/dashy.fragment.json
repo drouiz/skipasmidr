@@ -1,0 +1,7 @@
+{
+  "name": "Flowise",
+  "icon": "fas fa-project-diagram",
+  "url": "http://flowise.127.0.0.1.traefik.me:9000",
+  "category": "AI",
+  "tags": ["rag", "langchain", "visual"]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Docker Registry",
+  "icon": "fab fa-docker",
+  "url": "http://registry.127.0.0.1.traefik.me:9000",
+  "category": "INFRA",
+  "tags": ["registry", "docker", "containers"]
+}

@@ -1,0 +1,38 @@
+services:
+  paperless-ngx:
+    image: ghcr.io/paperless-ngx/paperless-ngx:${PAPERLESS_VERSION:-latest}
+    container_name: paperless-ngx-infra
+    restart: unless-stopped
+    environment:
+      - PAPERLESS_REDIS=redis://redis-infra:6379
+      - PAPERLESS_DBHOST=postgres-infra
+      - PAPERLESS_DBNAME=${PAPERLESS_DB:-paperless}
+      - PAPERLESS_DBUSER=${ADMIN_USER:-admin}
+      - PAPERLESS_DBPASS=${ADMIN_PASSWORD:-admin123}
+      - PAPERLESS_ADMIN_USER=${ADMIN_USER:-admin}
+      - PAPERLESS_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - PAPERLESS_URL=http://paperless.127.0.0.1.traefik.me:9000
+      - PAPERLESS_SECRET_KEY=paperless-secret-key-change-me
+      - PAPERLESS_OCR_LANGUAGE=spa+eng
+    volumes:
+      - paperless-data:/usr/src/paperless/data
+      - paperless-media:/usr/src/paperless/media
+      - paperless-export:/usr/src/paperless/export
+      - paperless-consume:/usr/src/paperless/consume
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.paperless.rule=Host(`paperless.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.paperless.entrypoints=web"
+      - "traefik.http.services.paperless.loadbalancer.server.port=8000"
+    networks:
+      - infra-network
+
+volumes:
+  paperless-data:
+  paperless-media:
+  paperless-export:
+  paperless-consume:
+
+networks:
+  infra-network:
+    external: true

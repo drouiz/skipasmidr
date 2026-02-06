@@ -1,0 +1,31 @@
+services:
+  mixpost:
+    image: inovector/mixpost:${MIXPOST_VERSION:-latest}
+    container_name: mixpost-infra
+    restart: unless-stopped
+    environment:
+      - APP_NAME=Mixpost
+      - APP_URL=http://mixpost.127.0.0.1.traefik.me:9000
+      - APP_KEY=base64:your-app-key-here
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres-infra
+      - DB_PORT=5432
+      - DB_DATABASE=${MIXPOST_DB:-mixpost}
+      - DB_USERNAME=${POSTGRES_USER:-admin}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-admin123}
+      - REDIS_HOST=redis-infra
+    volumes:
+      - mixpost-data:/var/www/html/storage
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mixpost.rule=Host(`mixpost.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.mixpost.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+
+volumes:
+  mixpost-data:
+
+networks:
+  infra-network:
+    external: true

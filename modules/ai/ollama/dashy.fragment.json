@@ -1,0 +1,7 @@
+{
+  "name": "Ollama",
+  "icon": "fas fa-brain",
+  "url": "http://ollama.127.0.0.1.traefik.me:9000",
+  "category": "AI",
+  "tags": ["llm", "models", "inference"]
+}

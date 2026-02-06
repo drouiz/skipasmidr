@@ -1,0 +1,7 @@
+{
+  "name": "Tempo",
+  "icon": "fas fa-project-diagram",
+  "url": "http://tempo.127.0.0.1.traefik.me:9000",
+  "category": "MONITORING",
+  "tags": ["tracing", "tempo", "observability"]
+}

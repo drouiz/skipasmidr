@@ -1,0 +1,7 @@
+{
+  "name": "AnythingLLM",
+  "icon": "fas fa-comments",
+  "url": "http://anythingllm.127.0.0.1.traefik.me:9000",
+  "category": "AI",
+  "tags": ["ai", "llm", "rag", "documents", "chat"]
+}

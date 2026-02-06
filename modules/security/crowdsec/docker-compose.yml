@@ -1,0 +1,26 @@
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec:${CROWDSEC_VERSION:-latest}
+    container_name: crowdsec-infra
+    restart: unless-stopped
+    environment:
+      COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve"
+      GID: "${GID:-1000}"
+    volumes:
+      - crowdsec-data:/var/lib/crowdsec/data
+      - crowdsec-config:/etc/crowdsec
+      - /var/log:/var/log:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.crowdsec.rule=Host(`crowdsec.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.crowdsec.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+volumes:
+  crowdsec-data:
+  crowdsec-config:
+
+networks:
+  infra-network:
+    external: true

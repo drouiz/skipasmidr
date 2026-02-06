@@ -1,0 +1,7 @@
+{
+  "name": "Trino",
+  "icon": "fas fa-project-diagram",
+  "url": "http://trino.127.0.0.1.traefik.me:9000",
+  "category": "DATABASES",
+  "tags": ["database", "sql", "distributed", "presto", "analytics"]
+}

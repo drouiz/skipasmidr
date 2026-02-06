@@ -1,0 +1,24 @@
+services:
+  technitium:
+    image: technitium/dns-server:${TECHNITIUM_VERSION:-latest}
+    container_name: technitium-infra
+    restart: unless-stopped
+    ports:
+      - "5380:5380/tcp"      # Web UI (tambien via Traefik)
+      - "53:53/udp"          # DNS UDP
+      - "53:53/tcp"          # DNS TCP
+    volumes:
+      - technitium-data:/etc/dns
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.technitium.rule=Host(`dns.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.technitium.loadbalancer.server.port=5380"
+    networks:
+      - infra-network
+
+volumes:
+  technitium-data:
+
+networks:
+  infra-network:
+    external: true

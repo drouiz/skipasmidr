@@ -1,0 +1,7 @@
+{
+  "name": "Postiz",
+  "icon": "fas fa-calendar-alt",
+  "url": "http://postiz.127.0.0.1.traefik.me:9000",
+  "category": "SOCIAL",
+  "tags": ["social-media", "scheduler", "open-source"]
+}

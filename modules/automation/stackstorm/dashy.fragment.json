@@ -1,0 +1,7 @@
+{
+  "name": "StackStorm",
+  "icon": "fas fa-bolt",
+  "url": "http://stackstorm.127.0.0.1.traefik.me:9000",
+  "category": "AUTOMATION",
+  "tags": ["automation", "event-driven", "runbook"]
+}

@@ -1,0 +1,24 @@
+name: Full Stack
+description: Todo el stack completo (cuidado con recursos!)
+
+services:
+  # Infra
+  - postgres
+  - redis
+  - mongodb
+  - elasticsearch
+  - rabbitmq
+  - kafka
+  - minio
+  # Monitoring
+  - grafana
+  - prometheus
+  - loki
+  # Automation
+  - n8n
+  # Data
+  - nocodb
+  - superset
+  # Corporativo
+  - odoo
+  - keycloak

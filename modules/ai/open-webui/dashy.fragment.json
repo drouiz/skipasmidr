@@ -1,0 +1,7 @@
+{
+  "name": "AI Chat",
+  "icon": "fas fa-comments",
+  "url": "http://chat.127.0.0.1.traefik.me:9000",
+  "category": "AI",
+  "tags": ["chat", "llm", "interface"]
+}

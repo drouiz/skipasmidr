@@ -1,0 +1,7 @@
+{
+  "name": "Restic Server",
+  "icon": "fas fa-archive",
+  "url": "http://restic.127.0.0.1.traefik.me:9000",
+  "category": "OPS",
+  "tags": ["backup", "restic", "storage"]
+}

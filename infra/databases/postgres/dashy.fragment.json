@@ -1,0 +1,7 @@
+{
+  "name": "pgAdmin",
+  "icon": "fas fa-database",
+  "url": "http://pgadmin.127.0.0.1.traefik.me:9000",
+  "category": "INFRA",
+  "tags": ["database", "postgresql", "admin"]
+}

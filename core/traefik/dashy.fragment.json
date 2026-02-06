@@ -1,0 +1,7 @@
+{
+  "name": "Traefik",
+  "icon": "fas fa-route",
+  "url": "http://traefik.127.0.0.1.traefik.me:9000",
+  "category": "CORE",
+  "tags": ["proxy", "routing", "load-balancer"]
+}

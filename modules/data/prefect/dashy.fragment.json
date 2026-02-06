@@ -1,0 +1,7 @@
+{
+  "name": "Prefect",
+  "icon": "fas fa-water",
+  "url": "http://prefect.127.0.0.1.traefik.me:9000",
+  "category": "DATA",
+  "tags": ["orchestration", "workflow", "data"]
+}

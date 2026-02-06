@@ -1,0 +1,38 @@
+services:
+  windmill:
+    image: ghcr.io/windmill-labs/windmill:${WINDMILL_VERSION:-latest}
+    container_name: windmill-infra
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${WINDMILL_DB:-windmill}
+      - BASE_URL=http://windmill.127.0.0.1.traefik.me:9000
+      - RUST_LOG=info
+    volumes:
+      - windmill-data:/tmp/windmill
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.windmill.rule=Host(`windmill.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.windmill.loadbalancer.server.port=8000"
+    networks:
+      - infra-network
+
+  windmill-worker:
+    image: ghcr.io/windmill-labs/windmill:${WINDMILL_VERSION:-latest}
+    container_name: windmill-worker-infra
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${WINDMILL_DB:-windmill}
+      - WORKER_GROUP=default
+      - RUST_LOG=info
+    command: windmill worker
+    volumes:
+      - windmill-data:/tmp/windmill
+    networks:
+      - infra-network
+
+volumes:
+  windmill-data:
+
+networks:
+  infra-network:
+    external: true

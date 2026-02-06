@@ -1,0 +1,25 @@
+# Restic REST Server - Backend para backups
+services:
+  restic-server:
+    image: restic/rest-server:${RESTIC_VERSION:-latest}
+    container_name: restic-infra
+    restart: unless-stopped
+    environment:
+      - OPTIONS=--no-auth
+      # Para produccion, usar autenticacion:
+      # - OPTIONS=--htpasswd-file /data/.htpasswd
+    volumes:
+      - restic-data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.restic.rule=Host(`restic.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.restic.loadbalancer.server.port=8000"
+    networks:
+      - infra-network
+
+volumes:
+  restic-data:
+
+networks:
+  infra-network:
+    external: true

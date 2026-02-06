@@ -1,0 +1,7 @@
+{
+  "name": "Chroma",
+  "icon": "fas fa-database",
+  "url": "http://chroma.127.0.0.1.traefik.me:9000",
+  "category": "AI",
+  "tags": ["vectordb", "embeddings", "simple"]
+}

@@ -1,0 +1,26 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-latest}
+    container_name: keycloak-infra
+    restart: unless-stopped
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-infra:5432/${KEYCLOAK_DB:-keycloak}
+      KC_DB_USERNAME: ${POSTGRES_USER:-admin}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_USER:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD:-admin123}
+      KC_PROXY: edge
+      KC_HOSTNAME_URL: http://keycloak.127.0.0.1.traefik.me:9000
+      KC_HOSTNAME_ADMIN_URL: http://keycloak.127.0.0.1.traefik.me:9000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloak.rule=Host(`keycloak.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

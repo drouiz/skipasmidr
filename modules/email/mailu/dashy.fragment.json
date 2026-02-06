@@ -1,0 +1,7 @@
+{
+  "name": "Mailu",
+  "icon": "fas fa-envelope",
+  "url": "http://mail.127.0.0.1.traefik.me:9000",
+  "category": "EMAIL",
+  "tags": ["email", "smtp", "webmail"]
+}

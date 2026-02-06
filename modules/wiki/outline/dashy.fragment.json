@@ -1,0 +1,7 @@
+{
+  "name": "Outline",
+  "icon": "fas fa-book-open",
+  "url": "http://outline.127.0.0.1.traefik.me:9000",
+  "category": "WIKI",
+  "tags": ["wiki", "docs", "knowledge-base", "team"]
+}

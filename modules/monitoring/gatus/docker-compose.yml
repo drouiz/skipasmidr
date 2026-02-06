@@ -1,0 +1,17 @@
+services:
+  gatus:
+    image: twinproduction/gatus:${GATUS_VERSION:-latest}
+    container_name: gatus-infra
+    restart: unless-stopped
+    volumes:
+      - ./config.yaml:/config/config.yaml:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gatus.rule=Host(`gatus.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.gatus.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

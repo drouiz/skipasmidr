@@ -1,0 +1,7 @@
+{
+  "name": "Appsmith",
+  "icon": "fas fa-layer-group",
+  "url": "http://appsmith.127.0.0.1.traefik.me:9000",
+  "category": "LOWCODE",
+  "tags": ["lowcode", "apps", "internal-tools"]
+}

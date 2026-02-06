@@ -1,0 +1,33 @@
+# Mastodon es complejo. Esta es una configuracion simplificada.
+# Para produccion ver: https://docs.joinmastodon.org/admin/install/
+
+services:
+  mastodon-web:
+    image: tootsuite/mastodon:${MASTODON_VERSION:-latest}
+    container_name: mastodon-infra
+    restart: unless-stopped
+    command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
+    environment:
+      - LOCAL_DOMAIN=mastodon.127.0.0.1.traefik.me
+      - REDIS_HOST=redis-infra
+      - DB_HOST=postgres-infra
+      - DB_USER=${POSTGRES_USER:-admin}
+      - DB_PASS=${POSTGRES_PASSWORD:-admin123}
+      - DB_NAME=${MASTODON_DB:-mastodon}
+      - SECRET_KEY_BASE=please-change-me
+      - OTP_SECRET=please-change-me
+    volumes:
+      - mastodon-data:/mastodon/public/system
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mastodon.rule=Host(`mastodon.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.mastodon.loadbalancer.server.port=3000"
+    networks:
+      - infra-network
+
+volumes:
+  mastodon-data:
+
+networks:
+  infra-network:
+    external: true

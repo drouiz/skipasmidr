@@ -1,0 +1,29 @@
+services:
+  flowise:
+    image: flowiseai/flowise:${FLOWISE_VERSION:-latest}
+    container_name: flowise-infra
+    restart: unless-stopped
+    environment:
+      - FLOWISE_USERNAME=${FLOWISE_USER:-admin}
+      - FLOWISE_PASSWORD=${FLOWISE_PASSWORD:-admin123}
+      - DATABASE_TYPE=postgres
+      - DATABASE_HOST=postgres-infra
+      - DATABASE_PORT=5432
+      - DATABASE_USER=${POSTGRES_USER:-admin}
+      - DATABASE_PASSWORD=${POSTGRES_PASSWORD:-admin123}
+      - DATABASE_NAME=${FLOWISE_DB:-flowise}
+    volumes:
+      - flowise-data:/root/.flowise
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.flowise.rule=Host(`flowise.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.flowise.loadbalancer.server.port=3000"
+    networks:
+      - infra-network
+
+volumes:
+  flowise-data:
+
+networks:
+  infra-network:
+    external: true

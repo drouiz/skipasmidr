@@ -1,0 +1,18 @@
+services:
+  hoppscotch:
+    image: hoppscotch/hoppscotch:${HOPPSCOTCH_VERSION:-latest}
+    container_name: hoppscotch-infra
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${HOPPSCOTCH_DB:-hoppscotch}
+      - VITE_ALLOWED_AUTH_PROVIDERS=EMAIL
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.hoppscotch.rule=Host(`hoppscotch.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.hoppscotch.loadbalancer.server.port=3000"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

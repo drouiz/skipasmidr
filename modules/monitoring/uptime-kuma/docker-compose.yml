@@ -1,0 +1,20 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:${UPTIMEKUMA_VERSION:-1}
+    container_name: uptime-kuma-infra
+    restart: unless-stopped
+    volumes:
+      - uptime-kuma-data:/app/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
+    networks:
+      - infra-network
+
+volumes:
+  uptime-kuma-data:
+
+networks:
+  infra-network:
+    external: true

@@ -1,0 +1,7 @@
+{
+  "name": "Neo4j",
+  "icon": "fas fa-project-diagram",
+  "url": "http://neo4j.127.0.0.1.traefik.me:9000",
+  "category": "INFRA",
+  "tags": ["database", "graph", "neo4j"]
+}

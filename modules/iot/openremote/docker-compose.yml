@@ -1,0 +1,29 @@
+services:
+  openremote:
+    image: openremote/manager:${OPENREMOTE_VERSION:-latest}
+    container_name: openremote-infra
+    restart: unless-stopped
+    environment:
+      - OR_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - OR_SETUP_TYPE=demo
+      - OR_HOSTNAME=openremote.127.0.0.1.traefik.me
+      - OR_SSL_PORT=-1
+      - OR_DEV_MODE=true
+      - OR_DB_HOST=postgres-infra
+      - OR_DB_PORT=5432
+      - OR_DB_NAME=${OPENREMOTE_DB:-openremote}
+      - OR_DB_USER=${POSTGRES_USER:-admin}
+      - OR_DB_PASSWORD=${POSTGRES_PASSWORD:-admin123}
+    volumes:
+      - ../../../volumes/openremote:/deployment
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.openremote.rule=Host(`openremote.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.openremote.entrypoints=web"
+      - "traefik.http.services.openremote.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

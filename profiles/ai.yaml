@@ -1,0 +1,22 @@
+name: AI Stack
+description: Stack completo de IA local - LLMs, RAG, observabilidad
+
+services:
+  # Servidor de modelos
+  - ollama
+  # Frontend de chat
+  - open-webui
+  # Vector database para RAG
+  - qdrant
+  # Constructor visual de RAG
+  - flowise
+  # Observabilidad
+  - langfuse
+
+env:
+  # Modelo a descargar automaticamente
+  OLLAMA_MODEL: llama3.2:1b
+  # Bases de datos
+  OPENWEBUI_DB: ai_openwebui
+  FLOWISE_DB: ai_flowise
+  LANGFUSE_DB: ai_langfuse

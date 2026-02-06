@@ -1,0 +1,7 @@
+{
+  "name": "Dolibarr",
+  "icon": "fas fa-briefcase",
+  "url": "http://dolibarr.127.0.0.1.traefik.me:9000",
+  "category": "CORPORATIVO",
+  "tags": ["erp", "crm", "invoicing"]
+}

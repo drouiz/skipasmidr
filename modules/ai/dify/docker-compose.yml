@@ -1,0 +1,64 @@
+services:
+  dify-api:
+    image: langgenius/dify-api:${DIFY_VERSION:-latest}
+    container_name: dify-api-infra
+    restart: unless-stopped
+    environment:
+      - MODE=api
+      - SECRET_KEY=sk-dify-secret-key-change-me
+      - DB_USERNAME=${ADMIN_USER:-admin}
+      - DB_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - DB_HOST=postgres-infra
+      - DB_PORT=5432
+      - DB_DATABASE=${DIFY_DB:-dify}
+      - REDIS_HOST=redis-infra
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - CELERY_BROKER_URL=redis://:${ADMIN_PASSWORD:-admin123}@redis-infra:6379/1
+    volumes:
+      - dify-storage:/app/api/storage
+    networks:
+      - infra-network
+
+  dify-worker:
+    image: langgenius/dify-api:${DIFY_VERSION:-latest}
+    container_name: dify-worker-infra
+    restart: unless-stopped
+    environment:
+      - MODE=worker
+      - SECRET_KEY=sk-dify-secret-key-change-me
+      - DB_USERNAME=${ADMIN_USER:-admin}
+      - DB_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - DB_HOST=postgres-infra
+      - DB_PORT=5432
+      - DB_DATABASE=${DIFY_DB:-dify}
+      - REDIS_HOST=redis-infra
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - CELERY_BROKER_URL=redis://:${ADMIN_PASSWORD:-admin123}@redis-infra:6379/1
+    volumes:
+      - dify-storage:/app/api/storage
+    networks:
+      - infra-network
+
+  dify-web:
+    image: langgenius/dify-web:${DIFY_VERSION:-latest}
+    container_name: dify-web-infra
+    restart: unless-stopped
+    environment:
+      - CONSOLE_API_URL=http://dify-api:5001
+      - APP_API_URL=http://dify-api:5001
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dify.rule=Host(`dify.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.dify.entrypoints=web"
+      - "traefik.http.services.dify.loadbalancer.server.port=3000"
+    networks:
+      - infra-network
+
+volumes:
+  dify-storage:
+
+networks:
+  infra-network:
+    external: true

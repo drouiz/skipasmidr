@@ -1,0 +1,43 @@
+services:
+  ollama:
+    image: ollama/ollama:${OLLAMA_VERSION:-latest}
+    container_name: ollama-infra
+    restart: unless-stopped
+    volumes:
+      - ../../../volumes/ollama:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      # GPU support (descomentar si tienes NVIDIA GPU)
+      # - NVIDIA_VISIBLE_DEVICES=all
+    # Para GPU NVIDIA, descomentar:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ollama.rule=Host(`ollama.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.ollama.loadbalancer.server.port=11434"
+    networks:
+      - infra-network
+    # Script para descargar modelo al iniciar
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        /bin/ollama serve &
+        sleep 5
+        if [ -n "${OLLAMA_MODEL:-}" ]; then
+          echo "Descargando modelo: ${OLLAMA_MODEL}"
+          ollama pull ${OLLAMA_MODEL}
+        fi
+        wait
+
+volumes:
+  ollama-data:
+
+networks:
+  infra-network:
+    external: true

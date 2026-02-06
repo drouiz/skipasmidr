@@ -1,0 +1,7 @@
+{
+  "name": "NocoDB",
+  "icon": "fas fa-table",
+  "url": "http://nocodb.127.0.0.1.traefik.me:9000",
+  "category": "DATA",
+  "tags": ["database", "spreadsheet", "airtable"]
+}

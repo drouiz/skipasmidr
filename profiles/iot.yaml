@@ -1,0 +1,7 @@
+name: IoT / Smart Home
+description: Domotica y camaras
+
+services:
+  - home-assistant
+  - frigate
+  - node-red

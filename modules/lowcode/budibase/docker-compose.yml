@@ -1,0 +1,27 @@
+services:
+  budibase:
+    image: budibase/budibase:${BUDIBASE_VERSION:-latest}
+    container_name: budibase-infra
+    restart: unless-stopped
+    environment:
+      - MAIN_PORT=10000
+      - JWT_SECRET=changeme-secret-key
+      - MINIO_ACCESS_KEY=admin
+      - MINIO_SECRET_KEY=admin123456
+      - REDIS_URL=redis://redis-infra:6379
+      - COUCH_DB_URL=http://admin:admin123@couchdb-infra:5984
+    volumes:
+      - budibase-data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.budibase.rule=Host(`budibase.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.budibase.loadbalancer.server.port=10000"
+    networks:
+      - infra-network
+
+volumes:
+  budibase-data:
+
+networks:
+  infra-network:
+    external: true

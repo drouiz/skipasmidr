@@ -1,0 +1,38 @@
+# Harbor es complejo y normalmente se instala con su propio installer.
+# Esta es una version simplificada usando el registry de Docker + UI.
+# Para Harbor completo, usar: https://goharbor.io/docs/2.10.0/install-config/
+
+services:
+  registry:
+    image: registry:2
+    container_name: docker-registry-infra
+    restart: unless-stopped
+    volumes:
+      - registry-data:/var/lib/registry
+    networks:
+      - infra-network
+
+  registry-ui:
+    image: joxit/docker-registry-ui:latest
+    container_name: registry-ui-infra
+    restart: unless-stopped
+    environment:
+      SINGLE_REGISTRY: "true"
+      REGISTRY_TITLE: "Docker Registry"
+      REGISTRY_URL: http://registry:5000
+      DELETE_IMAGES: "true"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.registry.rule=Host(`registry.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.registry.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+    depends_on:
+      - registry
+
+volumes:
+  registry-data:
+
+networks:
+  infra-network:
+    external: true

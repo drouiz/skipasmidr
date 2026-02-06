@@ -1,0 +1,7 @@
+{
+  "name": "Kibana",
+  "icon": "fas fa-search",
+  "url": "http://kibana.127.0.0.1.traefik.me:9000",
+  "category": "INFRA",
+  "tags": ["search", "elasticsearch", "analytics", "logs"]
+}

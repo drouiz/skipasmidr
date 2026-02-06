@@ -1,0 +1,20 @@
+services:
+  kaa:
+    image: kaaproject/kaa:${KAA_VERSION:-latest}
+    container_name: kaa-infra
+    restart: unless-stopped
+    environment:
+      - KAA_LICENSE_KEY=${KAA_LICENSE_KEY:-}
+    volumes:
+      - ../../../volumes/kaa:/var/kaa
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kaa.rule=Host(`kaa.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.kaa.entrypoints=web"
+      - "traefik.http.services.kaa.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

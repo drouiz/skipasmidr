@@ -1,0 +1,7 @@
+{
+  "name": "Paperless-ngx",
+  "icon": "fas fa-file-alt",
+  "url": "http://paperless.127.0.0.1.traefik.me:9000",
+  "category": "DOCUMENTS",
+  "tags": ["documents", "ocr", "archive", "paperless"]
+}

@@ -1,0 +1,20 @@
+services:
+  appsmith:
+    image: appsmith/appsmith-ce:${APPSMITH_VERSION:-latest}
+    container_name: appsmith-infra
+    restart: unless-stopped
+    volumes:
+      - appsmith-data:/appsmith-stacks
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.appsmith.rule=Host(`appsmith.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.appsmith.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+
+volumes:
+  appsmith-data:
+
+networks:
+  infra-network:
+    external: true

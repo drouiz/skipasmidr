@@ -1,0 +1,184 @@
+# =============================================================================
+# DEPENDENCIAS ENTRE SERVICIOS
+# Define que infraestructura necesita cada servicio
+# El deploy.py levantara automaticamente las dependencias
+# =============================================================================
+
+# Corporativo
+odoo:
+  - postgres
+
+# Auth
+keycloak:
+  - postgres
+
+# Automation
+n8n:
+  - postgres
+  - redis
+
+stackstorm:
+  - postgres
+  - rabbitmq
+  - mongodb
+
+# Data
+dagster:
+  - postgres
+
+superset:
+  - postgres
+  - redis
+
+nocodb:
+  - postgres
+
+prefect:
+  - postgres
+
+airflow:
+  - postgres
+  - redis
+
+windmill:
+  - postgres
+
+# Social
+mastodon:
+  - postgres
+  - redis
+  - elasticsearch
+
+mixpost:
+  - postgres
+  - redis
+
+postiz:
+  - postgres
+  - redis
+
+# Security
+opencti:
+  - elasticsearch
+  - redis
+  - minio
+
+# Low-code
+budibase:
+  - redis
+
+# Developer
+hoppscotch:
+  - postgres
+
+code-server: []
+
+lighthouse: []
+
+# Monitoring (sin dependencias de infra)
+grafana: []
+prometheus: []
+loki: []
+tempo: []
+promtail:
+  - loki
+gatus: []
+netdata: []
+node-exporter: []
+uptime-kuma: []
+
+# IoT
+home-assistant: []
+frigate: []
+
+# Wiki
+wikijs:
+  - postgres
+
+outline:
+  - postgres
+  - redis
+  - keycloak
+
+# Corporativo adicional
+openproject:
+  - postgres
+
+dolibarr:
+  - mariadb
+
+suitecrm:
+  - mariadb
+
+mautic:
+  - mariadb
+
+# AI
+ollama: []
+
+open-webui:
+  - ollama
+  - postgres
+
+flowise:
+  - postgres
+
+langfuse:
+  - postgres
+
+dify:
+  - postgres
+  - redis
+
+anything-llm:
+  - ollama
+
+# Vector DBs
+qdrant: []
+chroma: []
+
+# Analytics DBs
+clickhouse: []
+trino: []
+
+# Documents
+paperless-ngx:
+  - postgres
+  - redis
+
+tandoor:
+  - postgres
+
+# Scheduling
+calcom:
+  - postgres
+
+# Security adicional
+vaultwarden: []
+vault: []
+
+# Ops / Backups
+restic: []
+rclone: []
+watchtower: []
+
+# DNS
+technitium: []
+
+# Email
+mailu: []
+
+# Notifications
+ntfy: []
+
+# Dashboard alternatives
+homer: []
+organizr: []
+
+# Otros sin dependencias
+node-red: []
+crowdsec: []
+fail2ban: []
+adguard: []
+appsmith: []
+backstage: []

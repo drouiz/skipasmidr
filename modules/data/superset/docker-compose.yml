@@ -1,0 +1,36 @@
+services:
+  superset:
+    image: apache/superset:${SUPERSET_VERSION:-latest}
+    container_name: superset-infra
+    restart: unless-stopped
+    environment:
+      - SUPERSET_SECRET_KEY=${SUPERSET_SECRET:-thisISaSECRET_1234}
+      - DATABASE_HOST=postgres-infra
+      - DATABASE_PORT=5432
+      - DATABASE_USER=${POSTGRES_USER:-admin}
+      - DATABASE_PASSWORD=${POSTGRES_PASSWORD:-admin123}
+      - DATABASE_DB=${SUPERSET_DB:-superset}
+      - REDIS_HOST=redis-infra
+      - REDIS_PORT=6379
+    volumes:
+      - superset-data:/app/superset_home
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.superset.rule=Host(`superset.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.superset.loadbalancer.server.port=8088"
+    networks:
+      - infra-network
+    command: >
+      bash -c "
+        superset db upgrade &&
+        superset fab create-admin --username admin --firstname Admin --lastname User --email admin@admin.com --password admin123 || true &&
+        superset init &&
+        superset run -h 0.0.0.0 -p 8088
+      "
+
+volumes:
+  superset-data:
+
+networks:
+  infra-network:
+    external: true

@@ -1,0 +1,7 @@
+{
+  "name": "Windmill",
+  "icon": "fas fa-fan",
+  "url": "http://windmill.127.0.0.1.traefik.me:9000",
+  "category": "DATA",
+  "tags": ["scripts", "workflows", "automation"]
+}

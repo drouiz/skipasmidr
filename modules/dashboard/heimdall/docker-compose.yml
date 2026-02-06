@@ -1,0 +1,22 @@
+services:
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:${HEIMDALL_VERSION:-latest}
+    container_name: heimdall-infra
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ../../../volumes/heimdall:/config
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.heimdall.rule=Host(`heimdall.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.heimdall.entrypoints=web"
+      - "traefik.http.services.heimdall.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

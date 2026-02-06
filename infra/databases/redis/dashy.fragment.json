@@ -1,0 +1,7 @@
+{
+  "name": "Redis Commander",
+  "icon": "fas fa-bolt",
+  "url": "http://redis.127.0.0.1.traefik.me:9000",
+  "category": "INFRA",
+  "tags": ["cache", "redis", "key-value", "admin"]
+}

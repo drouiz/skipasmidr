@@ -1,0 +1,7 @@
+{
+  "name": "ClickHouse",
+  "icon": "fas fa-database",
+  "url": "http://clickhouse.127.0.0.1.traefik.me:9000",
+  "category": "DATABASES",
+  "tags": ["database", "analytics", "olap", "columnar"]
+}

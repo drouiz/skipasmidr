@@ -1,0 +1,7 @@
+{
+  "name": "Keycloak",
+  "icon": "fas fa-key",
+  "url": "http://keycloak.127.0.0.1.traefik.me:9000",
+  "category": "AUTH",
+  "tags": ["identity", "sso", "oauth"]
+}

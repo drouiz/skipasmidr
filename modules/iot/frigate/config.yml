@@ -1,0 +1,16 @@
+mqtt:
+  enabled: false
+
+cameras:
+  # Añadir camaras aqui
+  # ejemplo:
+  #   ffmpeg:
+  #     inputs:
+  #       - path: rtsp://user:pass@ip:554/stream
+  #         roles:
+  #           - detect
+  #           - record
+  #   detect:
+  #     enabled: true
+  #     width: 1280
+  #     height: 720

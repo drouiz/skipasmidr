@@ -1,0 +1,19 @@
+{
+  "name": "portainer",
+  "displayName": "Portainer",
+  "description": "Gestion de contenedores Docker",
+  "category": "core",
+  "version": "latest",
+  "ports": {
+    "http": 9000
+  },
+  "urls": {
+    "dashboard": "http://portainer.127.0.0.1.traefik.me:9000"
+  },
+  "credentials": {
+    "user": "admin",
+    "password": "admin123"
+  },
+  "dependencies": [],
+  "tags": ["docker", "containers", "management"]
+}

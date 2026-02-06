@@ -1,0 +1,7 @@
+{
+  "name": "Watchtower",
+  "icon": "fas fa-sync-alt",
+  "url": "#",
+  "category": "OPS",
+  "tags": ["updates", "docker", "automation"]
+}

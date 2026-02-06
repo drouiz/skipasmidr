@@ -1,0 +1,15 @@
+{
+  "name": "dashy",
+  "displayName": "Dashy",
+  "description": "Dashboard de servicios",
+  "category": "core",
+  "version": "latest",
+  "ports": {
+    "http": 8080
+  },
+  "urls": {
+    "dashboard": "http://dashy.127.0.0.1.traefik.me:9000"
+  },
+  "dependencies": [],
+  "tags": ["dashboard", "homepage"]
+}

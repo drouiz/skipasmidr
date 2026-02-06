@@ -1,0 +1,7 @@
+{
+  "name": "Kafka UI",
+  "icon": "fas fa-stream",
+  "url": "http://kafka.127.0.0.1.traefik.me:9000",
+  "category": "INFRA",
+  "tags": ["messaging", "streaming", "kafka"]
+}

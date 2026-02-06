@@ -1,0 +1,7 @@
+{
+  "name": "Superset",
+  "icon": "fas fa-chart-pie",
+  "url": "http://superset.127.0.0.1.traefik.me:9000",
+  "category": "DATA",
+  "tags": ["visualization", "bi", "dashboards"]
+}

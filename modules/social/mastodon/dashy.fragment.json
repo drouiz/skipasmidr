@@ -1,0 +1,7 @@
+{
+  "name": "Mastodon",
+  "icon": "fab fa-mastodon",
+  "url": "http://mastodon.127.0.0.1.traefik.me:9000",
+  "category": "SOCIAL",
+  "tags": ["social", "fediverse", "microblog"]
+}

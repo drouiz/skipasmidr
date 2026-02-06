@@ -1,0 +1,7 @@
+{
+  "name": "Node-RED",
+  "icon": "fas fa-sitemap",
+  "url": "http://nodered.127.0.0.1.traefik.me:9000",
+  "category": "AUTOMATION",
+  "tags": ["workflow", "iot", "automation"]
+}

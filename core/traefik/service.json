@@ -1,0 +1,17 @@
+{
+  "name": "traefik",
+  "displayName": "Traefik",
+  "description": "Reverse proxy y load balancer",
+  "category": "core",
+  "version": "v3.0",
+  "ports": {
+    "http": 9000,
+    "https": 9443,
+    "dashboard": 9080
+  },
+  "urls": {
+    "dashboard": "http://traefik.127.0.0.1.traefik.me:9000"
+  },
+  "dependencies": [],
+  "tags": ["proxy", "loadbalancer", "routing"]
+}

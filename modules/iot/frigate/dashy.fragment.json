@@ -1,0 +1,7 @@
+{
+  "name": "Frigate",
+  "icon": "fas fa-video",
+  "url": "http://frigate.127.0.0.1.traefik.me:9000",
+  "category": "IOT",
+  "tags": ["nvr", "camera", "ai", "detection"]
+}

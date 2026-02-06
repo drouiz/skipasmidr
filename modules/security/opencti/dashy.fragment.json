@@ -1,0 +1,7 @@
+{
+  "name": "OpenCTI",
+  "icon": "fas fa-spider",
+  "url": "http://opencti.127.0.0.1.traefik.me:9000",
+  "category": "SECURITY",
+  "tags": ["threat-intelligence", "security", "cti"]
+}

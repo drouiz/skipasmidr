@@ -1,0 +1,27 @@
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:${CLICKHOUSE_VERSION:-latest}
+    container_name: clickhouse-infra
+    restart: unless-stopped
+    environment:
+      - CLICKHOUSE_USER=${ADMIN_USER:-admin}
+      - CLICKHOUSE_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+    volumes:
+      - ../../../volumes/clickhouse:/var/lib/clickhouse
+      - clickhouse-logs:/var/log/clickhouse-server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.clickhouse.rule=Host(`clickhouse.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.clickhouse.entrypoints=web"
+      - "traefik.http.services.clickhouse.loadbalancer.server.port=8123"
+    networks:
+      - infra-network
+
+volumes:
+  clickhouse-data:
+  clickhouse-logs:
+
+networks:
+  infra-network:
+    external: true

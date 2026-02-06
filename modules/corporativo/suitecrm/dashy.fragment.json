@@ -1,0 +1,7 @@
+{
+  "name": "SuiteCRM",
+  "icon": "fas fa-users",
+  "url": "http://suitecrm.127.0.0.1.traefik.me:9000",
+  "category": "CORPORATIVO",
+  "tags": ["crm", "sales", "marketing"]
+}

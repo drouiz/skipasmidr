@@ -1,0 +1,7 @@
+{
+  "name": "Mautic",
+  "icon": "fas fa-bullhorn",
+  "url": "http://mautic.127.0.0.1.traefik.me:9000",
+  "category": "CORPORATIVO",
+  "tags": ["marketing", "automation", "email"]
+}

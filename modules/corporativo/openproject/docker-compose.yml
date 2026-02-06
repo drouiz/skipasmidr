@@ -1,0 +1,25 @@
+services:
+  openproject:
+    image: openproject/openproject:${OPENPROJECT_VERSION:-14}
+    container_name: openproject-infra
+    restart: unless-stopped
+    environment:
+      OPENPROJECT_SECRET_KEY_BASE: secret-key-base
+      OPENPROJECT_HOST__NAME: openproject.127.0.0.1.traefik.me:9000
+      OPENPROJECT_HTTPS: "false"
+      DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${OPENPROJECT_DB:-openproject}
+    volumes:
+      - openproject-data:/var/openproject/assets
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.openproject.rule=Host(`openproject.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.openproject.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+volumes:
+  openproject-data:
+
+networks:
+  infra-network:
+    external: true

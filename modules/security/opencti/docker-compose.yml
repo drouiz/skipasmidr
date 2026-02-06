@@ -1,0 +1,29 @@
+services:
+  opencti:
+    image: opencti/platform:${OPENCTI_VERSION:-latest}
+    container_name: opencti-infra
+    restart: unless-stopped
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=8096
+      - APP__PORT=8080
+      - APP__ADMIN__EMAIL=${OPENCTI_ADMIN_EMAIL:-admin@opencti.io}
+      - APP__ADMIN__PASSWORD=${OPENCTI_ADMIN_PASSWORD:-admin123}
+      - APP__ADMIN__TOKEN=${OPENCTI_ADMIN_TOKEN:-changeme-token-12345678}
+      - APP__BASE_URL=http://opencti.127.0.0.1.traefik.me:9000
+      - REDIS__HOSTNAME=redis-infra
+      - REDIS__PORT=6379
+      - ELASTICSEARCH__URL=http://elasticsearch-infra:9200
+      - MINIO__ENDPOINT=minio-infra
+      - MINIO__PORT=9000
+      - MINIO__ACCESS_KEY=admin
+      - MINIO__SECRET_KEY=admin123456
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.opencti.rule=Host(`opencti.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.opencti.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

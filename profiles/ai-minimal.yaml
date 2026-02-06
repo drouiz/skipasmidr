@@ -1,0 +1,9 @@
+name: AI Minimal
+description: Solo Ollama y Open WebUI para chat rapido
+
+services:
+  - ollama
+  - open-webui
+
+env:
+  OLLAMA_MODEL: phi3:mini

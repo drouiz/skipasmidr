@@ -1,0 +1,7 @@
+{
+  "name": "Lighthouse CI",
+  "icon": "fas fa-tachometer-alt",
+  "url": "http://lhci.127.0.0.1.traefik.me:9000",
+  "category": "DEVELOPER",
+  "tags": ["lighthouse", "performance", "audit", "seo", "accessibility"]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Backstage",
+  "icon": "fas fa-sitemap",
+  "url": "http://backstage.127.0.0.1.traefik.me:9000",
+  "category": "DEVELOPER",
+  "tags": ["developer-portal", "catalog", "docs"]
+}

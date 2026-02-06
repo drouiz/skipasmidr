@@ -1,0 +1,3 @@
+# Configurar repositorios de codigo aqui
+# load_from:
+#   - python_file: my_repository.py

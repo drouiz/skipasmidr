@@ -1,0 +1,37 @@
+services:
+  outline:
+    image: outlinewiki/outline:${OUTLINE_VERSION:-latest}
+    container_name: outline-infra
+    restart: unless-stopped
+    environment:
+      - SECRET_KEY=outline-secret-key-change-me-32chars
+      - UTILS_SECRET=outline-utils-secret-change-me
+      - DATABASE_URL=postgres://${ADMIN_USER:-admin}:${ADMIN_PASSWORD:-admin123}@postgres-infra:5432/${OUTLINE_DB:-outline}
+      - REDIS_URL=redis://:${ADMIN_PASSWORD:-admin123}@redis-infra:6379
+      - URL=http://outline.127.0.0.1.traefik.me:9000
+      - PORT=3000
+      - FORCE_HTTPS=false
+      - PGSSLMODE=disable
+      # Autenticacion (usar Keycloak o configurar OIDC)
+      - OIDC_CLIENT_ID=outline
+      - OIDC_CLIENT_SECRET=outline-secret
+      - OIDC_AUTH_URI=http://keycloak.127.0.0.1.traefik.me:9000/realms/master/protocol/openid-connect/auth
+      - OIDC_TOKEN_URI=http://keycloak-infra:8080/realms/master/protocol/openid-connect/token
+      - OIDC_USERINFO_URI=http://keycloak-infra:8080/realms/master/protocol/openid-connect/userinfo
+      - OIDC_DISPLAY_NAME=Keycloak
+    volumes:
+      - outline-data:/var/lib/outline/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.outline.rule=Host(`outline.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.outline.entrypoints=web"
+      - "traefik.http.services.outline.loadbalancer.server.port=3000"
+    networks:
+      - infra-network
+
+volumes:
+  outline-data:
+
+networks:
+  infra-network:
+    external: true

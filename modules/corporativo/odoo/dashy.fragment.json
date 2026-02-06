@@ -1,0 +1,7 @@
+{
+  "name": "Odoo",
+  "icon": "fas fa-building",
+  "url": "http://odoo.127.0.0.1.traefik.me:9000",
+  "category": "CORPORATIVO",
+  "tags": ["erp", "crm", "business"]
+}

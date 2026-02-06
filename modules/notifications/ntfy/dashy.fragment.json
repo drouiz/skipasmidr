@@ -1,0 +1,7 @@
+{
+  "name": "ntfy",
+  "icon": "fas fa-bell",
+  "url": "http://ntfy.127.0.0.1.traefik.me:9000",
+  "category": "NOTIFICATIONS",
+  "tags": ["notifications", "push", "alerts"]
+}

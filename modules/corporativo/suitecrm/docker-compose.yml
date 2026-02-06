@@ -1,0 +1,24 @@
+services:
+  suitecrm:
+    image: salesagility/suitecrm:${SUITECRM_VERSION:-8.7}
+    container_name: suitecrm-infra
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=mysql://${MYSQL_USER:-admin}:${MYSQL_PASSWORD:-admin123}@mariadb-infra:3306/${SUITECRM_DB:-suitecrm}
+      - SUITECRM_SITE_URL=http://suitecrm.127.0.0.1.traefik.me:9000
+    volumes:
+      - suitecrm-data:/var/www/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.suitecrm.rule=Host(`suitecrm.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.suitecrm.entrypoints=web"
+      - "traefik.http.services.suitecrm.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+volumes:
+  suitecrm-data:
+
+networks:
+  infra-network:
+    external: true

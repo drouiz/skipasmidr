@@ -1,0 +1,18 @@
+services:
+  fail2ban:
+    image: crazymax/fail2ban:${FAIL2BAN_VERSION:-latest}
+    container_name: fail2ban-infra
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - fail2ban-data:/data
+      - /var/log:/var/log:ro
+    environment:
+      - TZ=Europe/Madrid
+      - F2B_LOG_LEVEL=INFO
+
+volumes:
+  fail2ban-data:

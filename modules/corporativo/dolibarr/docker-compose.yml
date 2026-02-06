@@ -1,0 +1,32 @@
+services:
+  dolibarr:
+    image: dolibarr/dolibarr:${DOLIBARR_VERSION:-latest}
+    container_name: dolibarr-infra
+    restart: unless-stopped
+    environment:
+      DOLI_DB_HOST: mariadb-infra
+      DOLI_DB_USER: ${MYSQL_USER:-admin}
+      DOLI_DB_PASSWORD: ${MYSQL_PASSWORD:-admin123}
+      DOLI_DB_NAME: ${DOLIBARR_DB:-dolibarr}
+      DOLI_ADMIN_LOGIN: admin
+      DOLI_ADMIN_PASSWORD: admin123
+      DOLI_URL_ROOT: http://dolibarr.127.0.0.1.traefik.me:9000
+      DOLI_INIT_DEMO: 0
+    volumes:
+      - dolibarr-docs:/var/www/documents
+      - dolibarr-custom:/var/www/html/custom
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dolibarr.rule=Host(`dolibarr.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.dolibarr.entrypoints=web"
+      - "traefik.http.services.dolibarr.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+
+volumes:
+  dolibarr-docs:
+  dolibarr-custom:
+
+networks:
+  infra-network:
+    external: true

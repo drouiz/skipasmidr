@@ -1,0 +1,7 @@
+{
+  "name": "Rclone",
+  "icon": "fas fa-cloud-upload-alt",
+  "url": "http://rclone.127.0.0.1.traefik.me:9000",
+  "category": "OPS",
+  "tags": ["sync", "cloud", "backup"]
+}

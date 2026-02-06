@@ -1,0 +1,6 @@
+name: Corporativo
+description: ERP y herramientas empresariales
+
+services:
+  - odoo
+  - keycloak

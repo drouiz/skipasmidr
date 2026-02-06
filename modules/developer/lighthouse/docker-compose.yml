@@ -1,0 +1,39 @@
+services:
+  lighthouse:
+    image: femtopixel/google-lighthouse:${LIGHTHOUSE_VERSION:-latest}
+    container_name: lighthouse-infra
+    restart: unless-stopped
+    volumes:
+      - lighthouse-reports:/home/user/reports
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lighthouse.rule=Host(`lighthouse.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.lighthouse.entrypoints=web"
+      - "traefik.http.services.lighthouse.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+
+  # Alternativa: Lighthouse CI Server
+  lhci-server:
+    image: patrickhulce/lhci-server:${LHCI_VERSION:-latest}
+    container_name: lhci-server-infra
+    restart: unless-stopped
+    environment:
+      - LHCI_NO_LIGHTHOUSERC=true
+    volumes:
+      - lhci-data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lhci.rule=Host(`lhci.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.lhci.entrypoints=web"
+      - "traefik.http.services.lhci.loadbalancer.server.port=9001"
+    networks:
+      - infra-network
+
+volumes:
+  lighthouse-reports:
+  lhci-data:
+
+networks:
+  infra-network:
+    external: true

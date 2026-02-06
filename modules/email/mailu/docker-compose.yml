@@ -1,0 +1,31 @@
+# Mailu - Stack de email completo pero mas ligero que Mailcow
+# NOTA: Para produccion, usar el setup oficial de Mailu
+
+services:
+  mailu-front:
+    image: mailu/nginx:${MAILU_VERSION:-2.0}
+    container_name: mailu-infra
+    restart: unless-stopped
+    environment:
+      - DOMAIN=mail.local
+      - HOSTNAMES=mail.local
+      - TLS_FLAVOR=notls
+      - ADMIN=admin
+      - WEBMAIL=roundcube
+    volumes:
+      - mailu-certs:/certs
+      - mailu-overrides:/overrides
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mailu.rule=Host(`mail.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.mailu.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+
+volumes:
+  mailu-certs:
+  mailu-overrides:
+
+networks:
+  infra-network:
+    external: true

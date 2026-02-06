@@ -1,0 +1,8 @@
+name: Security Stack
+description: Seguridad y threat intelligence
+
+services:
+  - crowdsec
+  - fail2ban
+  - adguard
+  - opencti

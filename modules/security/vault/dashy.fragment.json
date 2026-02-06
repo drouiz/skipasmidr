@@ -1,0 +1,7 @@
+{
+  "name": "Vault",
+  "icon": "fas fa-vault",
+  "url": "http://vault.127.0.0.1.traefik.me:9000",
+  "category": "SECURITY",
+  "tags": ["secrets", "pki", "encryption"]
+}

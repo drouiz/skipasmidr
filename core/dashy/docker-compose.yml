@@ -1,0 +1,22 @@
+services:
+  dashy:
+    image: lissy93/dashy:latest
+    container_name: dashy-infra
+    restart: unless-stopped
+    volumes:
+      - ./conf.yml:/app/user-data/conf.yml:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashy.rule=Host(`dashy.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.dashy.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD", "node", "/app/services/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  infra-network:
+    external: true

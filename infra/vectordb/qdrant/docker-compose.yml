@@ -1,0 +1,20 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:${QDRANT_VERSION:-latest}
+    container_name: qdrant-infra
+    restart: unless-stopped
+    volumes:
+      - ../../../volumes/qdrant:/qdrant/storage
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qdrant.rule=Host(`qdrant.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.qdrant.loadbalancer.server.port=6333"
+    networks:
+      - infra-network
+
+volumes:
+  qdrant-data:
+
+networks:
+  infra-network:
+    external: true

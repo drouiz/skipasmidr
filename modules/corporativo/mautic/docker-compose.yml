@@ -1,0 +1,26 @@
+services:
+  mautic:
+    image: mautic/mautic:${MAUTIC_VERSION:-latest}
+    container_name: mautic-infra
+    restart: unless-stopped
+    environment:
+      - MAUTIC_DB_HOST=mariadb
+      - MAUTIC_DB_USER=${MYSQL_USER:-admin}
+      - MAUTIC_DB_PASSWORD=${MYSQL_PASSWORD:-admin123}
+      - MAUTIC_DB_NAME=${MAUTIC_DB:-mautic}
+      - MAUTIC_RUN_CRON_JOBS=true
+    volumes:
+      - mautic-data:/var/www/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mautic.rule=Host(`mautic.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.mautic.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+
+volumes:
+  mautic-data:
+
+networks:
+  infra-network:
+    external: true

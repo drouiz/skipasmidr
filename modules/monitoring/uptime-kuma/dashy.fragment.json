@@ -1,0 +1,7 @@
+{
+  "name": "Uptime Kuma",
+  "icon": "fas fa-heartbeat",
+  "url": "http://uptime.127.0.0.1.traefik.me:9000",
+  "category": "MONITORING",
+  "tags": ["uptime", "monitoring", "status"]
+}

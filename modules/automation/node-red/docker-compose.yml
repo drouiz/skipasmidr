@@ -1,0 +1,22 @@
+services:
+  node-red:
+    image: nodered/node-red:${NODERED_VERSION:-latest}
+    container_name: node-red-infra
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Madrid
+    volumes:
+      - nodered-data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.node-red.rule=Host(`nodered.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.node-red.loadbalancer.server.port=1880"
+    networks:
+      - infra-network
+
+volumes:
+  nodered-data:
+
+networks:
+  infra-network:
+    external: true

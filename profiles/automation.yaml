@@ -1,0 +1,7 @@
+name: Automation Stack
+description: Herramientas de automatizacion y workflows
+
+services:
+  - n8n
+  - node-red
+  - stackstorm

@@ -1,0 +1,7 @@
+{
+  "name": "Hoppscotch",
+  "icon": "fas fa-paper-plane",
+  "url": "http://hoppscotch.127.0.0.1.traefik.me:9000",
+  "category": "DEVELOPER",
+  "tags": ["api", "testing", "postman-alternative"]
+}

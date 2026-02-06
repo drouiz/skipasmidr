@@ -1,0 +1,7 @@
+{
+  "name": "Prometheus",
+  "icon": "fas fa-fire",
+  "url": "http://prometheus.127.0.0.1.traefik.me:9000",
+  "category": "MONITORING",
+  "tags": ["monitoring", "metrics", "alerting"]
+}

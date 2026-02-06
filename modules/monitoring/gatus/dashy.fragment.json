@@ -1,0 +1,7 @@
+{
+  "name": "Gatus",
+  "icon": "fas fa-heartbeat",
+  "url": "http://gatus.127.0.0.1.traefik.me:9000",
+  "category": "MONITORING",
+  "tags": ["health", "uptime", "status"]
+}

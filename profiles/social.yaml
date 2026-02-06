@@ -1,0 +1,7 @@
+name: Social Media
+description: Gestion de redes sociales
+
+services:
+  - mastodon
+  - mixpost
+  - postiz

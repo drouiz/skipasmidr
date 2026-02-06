@@ -1,0 +1,19 @@
+name: Data Platform
+description: Stack completo para trabajo con datos
+
+services:
+  - dagster
+  - superset
+  - nocodb
+  - prefect
+  - airflow
+  - windmill
+
+# Variables especificas para este profile
+env:
+  DAGSTER_DB: data_dagster
+  SUPERSET_DB: data_superset
+  NOCODB_DB: data_nocodb
+  PREFECT_DB: data_prefect
+  AIRFLOW_DB: data_airflow
+  WINDMILL_DB: data_windmill

@@ -1,0 +1,7 @@
+{
+  "name": "Mongo Express",
+  "icon": "fas fa-leaf",
+  "url": "http://mongo.127.0.0.1.traefik.me:9000",
+  "category": "INFRA",
+  "tags": ["database", "mongodb", "nosql", "admin"]
+}

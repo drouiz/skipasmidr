@@ -1,0 +1,25 @@
+services:
+  code-server:
+    image: codercom/code-server:${CODESERVER_VERSION:-latest}
+    container_name: code-server-infra
+    restart: unless-stopped
+    environment:
+      - PASSWORD=${ADMIN_PASSWORD:-admin123}
+    volumes:
+      - code-server-data:/home/coder
+      - code-server-config:/home/coder/.config
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.code-server.rule=Host(`code.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.code-server.entrypoints=web"
+      - "traefik.http.services.code-server.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+volumes:
+  code-server-data:
+  code-server-config:
+
+networks:
+  infra-network:
+    external: true

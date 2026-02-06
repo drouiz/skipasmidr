@@ -1,0 +1,31 @@
+services:
+  tandoor:
+    image: vabene1111/recipes:${TANDOOR_VERSION:-latest}
+    container_name: tandoor-infra
+    restart: unless-stopped
+    environment:
+      - SECRET_KEY=tandoor-secret-key-change-me
+      - DB_ENGINE=django.db.backends.postgresql
+      - POSTGRES_HOST=postgres-infra
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${TANDOOR_DB:-tandoor}
+      - POSTGRES_USER=${ADMIN_USER:-admin}
+      - POSTGRES_PASSWORD=${ADMIN_PASSWORD:-admin123}
+    volumes:
+      - tandoor-static:/opt/recipes/staticfiles
+      - tandoor-media:/opt/recipes/mediafiles
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tandoor.rule=Host(`recipes.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.tandoor.entrypoints=web"
+      - "traefik.http.services.tandoor.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+volumes:
+  tandoor-static:
+  tandoor-media:
+
+networks:
+  infra-network:
+    external: true

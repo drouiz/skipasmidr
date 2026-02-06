@@ -1,0 +1,31 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:${OPENWEBUI_VERSION:-main}
+    container_name: open-webui-infra
+    restart: unless-stopped
+    environment:
+      - OLLAMA_BASE_URL=http://ollama-infra:11434
+      - WEBUI_AUTH=true
+      - WEBUI_NAME=AI Chat
+      # Para conectar con OpenAI tambien:
+      # - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      # Vector DB para RAG
+      - CHROMA_HTTP_HOST=chroma-infra
+      - CHROMA_HTTP_PORT=8000
+      # Base de datos
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${OPENWEBUI_DB:-openwebui}
+    volumes:
+      - openwebui-data:/app/backend/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.openwebui.rule=Host(`chat.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.openwebui.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+volumes:
+  openwebui-data:
+
+networks:
+  infra-network:
+    external: true

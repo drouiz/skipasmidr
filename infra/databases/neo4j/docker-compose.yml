@@ -1,0 +1,32 @@
+services:
+  neo4j:
+    image: neo4j:${NEO4J_VERSION:-5}
+    container_name: neo4j-infra
+    restart: unless-stopped
+    environment:
+      NEO4J_AUTH: ${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-admin123}
+      NEO4J_PLUGINS: '["apoc", "graph-data-science"]'
+    volumes:
+      - ../../../volumes/neo4j:/data
+      - neo4j-logs:/logs
+    ports:
+      - "${EXPOSE_NEO4J_BOLT:-127.0.0.1:7687}:7687"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.neo4j.rule=Host(`neo4j.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.neo4j.loadbalancer.server.port=7474"
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7474"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  neo4j-data:
+  neo4j-logs:
+
+networks:
+  infra-network:
+    external: true

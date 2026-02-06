@@ -1,0 +1,7 @@
+{
+  "name": "Tandoor Recipes",
+  "icon": "fas fa-utensils",
+  "url": "http://recipes.127.0.0.1.traefik.me:9000",
+  "category": "DOCUMENTS",
+  "tags": ["recipes", "cooking", "meal-planning"]
+}

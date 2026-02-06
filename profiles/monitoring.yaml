@@ -1,0 +1,12 @@
+name: Monitoring Stack
+description: Observabilidad completa - metricas, logs, trazas
+
+services:
+  - grafana
+  - prometheus
+  - loki
+  - tempo
+  - promtail
+  - node-exporter
+  - gatus
+  - netdata

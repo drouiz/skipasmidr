@@ -1,0 +1,19 @@
+services:
+  kura:
+    image: eclipse/kura:${KURA_VERSION:-latest}
+    container_name: kura-infra
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - ../../../volumes/kura:/opt/eclipse/kura/user
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kura.rule=Host(`kura.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.kura.entrypoints=web"
+      - "traefik.http.services.kura.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

@@ -1,0 +1,40 @@
+# Balena OpenBalena - Self-hosted device management platform
+services:
+  openbalena-api:
+    image: balena/open-balena-api:${BALENA_VERSION:-latest}
+    container_name: balena-api-infra
+    restart: unless-stopped
+    environment:
+      - API_HOST=balena.127.0.0.1.traefik.me
+      - BALENA_ROOT_CA=
+      - COOKIE_SESSION_SECRET=balena-session-secret
+      - DB_HOST=postgres-infra
+      - DB_PORT=5432
+      - DB_USER=${POSTGRES_USER:-admin}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-admin123}
+      - DB_DATABASE=${BALENA_DB:-balena}
+      - DELTA_HOST=balena.127.0.0.1.traefik.me
+      - HOST=balena.127.0.0.1.traefik.me
+      - IMAGE_STORAGE_BUCKET=balena-images
+      - JSON_WEB_TOKEN_SECRET=balena-jwt-secret
+      - MIXPANEL_TOKEN=
+      - NODE_ENV=production
+      - PRODUCTION_MODE=false
+      - REDIS_HOST=redis-infra
+      - REDIS_PORT=6379
+      - REGISTRY2_HOST=registry.balena.127.0.0.1.traefik.me
+      - TOKEN_AUTH_BUILDER_TOKEN=balena-builder-token
+      - VPN_HOST=vpn.balena.127.0.0.1.traefik.me
+    volumes:
+      - ../../../volumes/balena:/balena
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.balena.rule=Host(`balena.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.balena.entrypoints=web"
+      - "traefik.http.services.balena.loadbalancer.server.port=80"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

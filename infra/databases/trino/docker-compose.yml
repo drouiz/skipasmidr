@@ -1,0 +1,21 @@
+services:
+  trino:
+    image: trinodb/trino:${TRINO_VERSION:-latest}
+    container_name: trino-infra
+    restart: unless-stopped
+    volumes:
+      - trino-data:/data/trino
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.trino.rule=Host(`trino.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.trino.entrypoints=web"
+      - "traefik.http.services.trino.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+volumes:
+  trino-data:
+
+networks:
+  infra-network:
+    external: true

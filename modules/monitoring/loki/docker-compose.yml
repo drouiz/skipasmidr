@@ -1,0 +1,21 @@
+services:
+  loki:
+    image: grafana/loki:${LOKI_VERSION:-latest}
+    container_name: loki-infra
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ../../../volumes/loki:/loki
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.loki.rule=Host(`loki.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.loki.loadbalancer.server.port=3100"
+    networks:
+      - infra-network
+
+volumes:
+  loki-data:
+
+networks:
+  infra-network:
+    external: true

@@ -1,0 +1,22 @@
+services:
+  tempo:
+    image: grafana/tempo:${TEMPO_VERSION:-latest}
+    container_name: tempo-infra
+    restart: unless-stopped
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml:ro
+      - tempo-data:/var/tempo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tempo.rule=Host(`tempo.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.tempo.loadbalancer.server.port=3200"
+    networks:
+      - infra-network
+
+volumes:
+  tempo-data:
+
+networks:
+  infra-network:
+    external: true

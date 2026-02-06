@@ -1,0 +1,7 @@
+{
+  "name": "Portainer",
+  "icon": "fab fa-docker",
+  "url": "http://portainer.127.0.0.1.traefik.me:9000",
+  "category": "CORE",
+  "tags": ["docker", "containers", "management"]
+}

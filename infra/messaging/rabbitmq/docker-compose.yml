@@ -1,0 +1,30 @@
+services:
+  rabbitmq:
+    image: rabbitmq:${RABBITMQ_VERSION:-3}-management
+    container_name: rabbitmq-infra
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-admin123}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "${EXPOSE_RABBITMQ_PORT:-127.0.0.1:5672}:5672"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rabbitmq-data:
+
+networks:
+  infra-network:
+    external: true

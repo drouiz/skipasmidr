@@ -1,0 +1,7 @@
+{
+  "name": "Home Assistant",
+  "icon": "fas fa-home",
+  "url": "http://hass.127.0.0.1.traefik.me:9000",
+  "category": "IOT",
+  "tags": ["home-automation", "iot", "smart-home"]
+}

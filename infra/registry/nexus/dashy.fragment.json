@@ -1,0 +1,7 @@
+{
+  "name": "Nexus",
+  "icon": "fas fa-box",
+  "url": "http://nexus.127.0.0.1.traefik.me:9000",
+  "category": "INFRA",
+  "tags": ["registry", "artifacts", "maven", "npm", "docker"]
+}

@@ -1,0 +1,27 @@
+services:
+  odoo:
+    image: odoo:${ODOO_VERSION:-17.0}
+    container_name: odoo-infra
+    restart: unless-stopped
+    environment:
+      - HOST=postgres-infra
+      - PORT=5432
+      - USER=${POSTGRES_USER:-admin}
+      - PASSWORD=${POSTGRES_PASSWORD:-admin123}
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - odoo-addons:/mnt/extra-addons
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.odoo.rule=Host(`odoo.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.odoo.loadbalancer.server.port=8069"
+    networks:
+      - infra-network
+
+volumes:
+  odoo-data:
+  odoo-addons:
+
+networks:
+  infra-network:
+    external: true

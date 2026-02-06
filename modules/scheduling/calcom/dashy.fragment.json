@@ -1,0 +1,7 @@
+{
+  "name": "Cal.com",
+  "icon": "fas fa-calendar-alt",
+  "url": "http://cal.127.0.0.1.traefik.me:9000",
+  "category": "SCHEDULING",
+  "tags": ["calendar", "scheduling", "booking", "appointments"]
+}

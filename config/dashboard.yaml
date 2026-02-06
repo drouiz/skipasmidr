@@ -1,0 +1,15 @@
+# Dashboard Configuration
+# Choose which dashboards to enable: dashy, homepage, heimdall
+enabled_dashboards:
+  - dashy
+  # - homepage
+  # - heimdall
+
+# Dashy theme: glass, nord, material, dark, etc.
+theme: glass
+
+# Dashboard title
+title: Dev Infrastructure
+
+# Dashboard description
+description: Development Environment Dashboard

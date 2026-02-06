@@ -1,0 +1,7 @@
+{
+  "name": "Netdata",
+  "icon": "fas fa-tachometer-alt",
+  "url": "http://netdata.127.0.0.1.traefik.me:9000",
+  "category": "MONITORING",
+  "tags": ["monitoring", "realtime", "system"]
+}

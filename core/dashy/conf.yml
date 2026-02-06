@@ -1,0 +1,83 @@
+pageInfo:
+  title: Dev Infrastructure
+  description: Development Environment Dashboard
+  navLinks: []
+appConfig:
+  theme: glass
+  layout: auto
+  iconSize: medium
+sections:
+- name: CORE
+  icon: fas fa-cog
+  items:
+  - title: Traefik
+    icon: fas fa-route
+    url: http://traefik.127.0.0.1.traefik.me:9000
+    tags:
+    - proxy
+    - routing
+    - load-balancer
+  - title: Dashy
+    icon: fas fa-th
+    url: http://dashy.127.0.0.1.traefik.me:9000
+    tags:
+    - dashboard
+    - home
+  - title: Portainer
+    icon: fab fa-docker
+    url: http://portainer.127.0.0.1.traefik.me:9000
+    tags:
+    - docker
+    - containers
+    - management
+- name: EXTERNAL
+  icon: fas fa-external-link-alt
+  items:
+  - title: Digital Ocean
+    icon: fas fa-cloud
+    url: https://cloud.digitalocean.com
+    tags:
+    - cloud
+    - hosting
+  - title: AWS Console
+    icon: fab fa-aws
+    url: https://console.aws.amazon.com
+    tags:
+    - cloud
+    - aws
+  - title: GitHub
+    icon: fab fa-github
+    url: https://github.com
+    tags:
+    - git
+    - code
+  - title: GitLab
+    icon: fab fa-gitlab
+    url: https://gitlab.com
+    tags:
+    - git
+    - code
+  - title: Gmail
+    icon: fas fa-envelope
+    url: https://mail.google.com
+    tags:
+    - email
+    - communication
+  - title: Slack
+    icon: fab fa-slack
+    url: https://slack.com
+    tags:
+    - chat
+    - communication
+  - title: Notion
+    icon: fas fa-book
+    url: https://notion.so
+    tags:
+    - docs
+    - notes
+  - title: Google Drive
+    icon: fab fa-google-drive
+    url: https://drive.google.com
+    tags:
+    - storage
+    - files

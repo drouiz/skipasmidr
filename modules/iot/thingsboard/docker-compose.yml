@@ -1,0 +1,24 @@
+services:
+  thingsboard:
+    image: thingsboard/tb-postgres:${THINGSBOARD_VERSION:-latest}
+    container_name: thingsboard-infra
+    restart: unless-stopped
+    environment:
+      - TB_QUEUE_TYPE=in-memory
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-infra:5432/${THINGSBOARD_DB:-thingsboard}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-admin}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-admin123}
+    volumes:
+      - ../../../volumes/thingsboard/data:/data
+      - ../../../volumes/thingsboard/logs:/var/log/thingsboard
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.thingsboard.rule=Host(`thingsboard.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.thingsboard.entrypoints=web"
+      - "traefik.http.services.thingsboard.loadbalancer.server.port=9090"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

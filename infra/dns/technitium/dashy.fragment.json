@@ -1,0 +1,7 @@
+{
+  "name": "Technitium DNS",
+  "icon": "fas fa-globe",
+  "url": "http://dns.127.0.0.1.traefik.me:9000",
+  "category": "INFRA",
+  "tags": ["dns", "networking", "server"]
+}

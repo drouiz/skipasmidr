@@ -1,0 +1,7 @@
+{
+  "name": "Wiki.js",
+  "icon": "fas fa-book",
+  "url": "http://wiki.127.0.0.1.traefik.me:9000",
+  "category": "DEVELOPER",
+  "tags": ["wiki", "documentation", "knowledge"]
+}

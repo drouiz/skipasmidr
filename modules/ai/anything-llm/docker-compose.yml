@@ -1,0 +1,26 @@
+services:
+  anything-llm:
+    image: mintplexlabs/anythingllm:${ANYTHINGLLM_VERSION:-latest}
+    container_name: anything-llm-infra
+    restart: unless-stopped
+    environment:
+      - STORAGE_DIR=/app/server/storage
+      - JWT_SECRET=anything-llm-jwt-secret-change-me
+      - LLM_PROVIDER=ollama
+      - OLLAMA_BASE_PATH=http://ollama:11434
+    volumes:
+      - anything-llm-data:/app/server/storage
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.anything-llm.rule=Host(`anythingllm.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.anything-llm.entrypoints=web"
+      - "traefik.http.services.anything-llm.loadbalancer.server.port=3001"
+    networks:
+      - infra-network
+
+volumes:
+  anything-llm-data:
+
+networks:
+  infra-network:
+    external: true

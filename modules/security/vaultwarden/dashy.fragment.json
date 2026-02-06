@@ -1,0 +1,7 @@
+{
+  "name": "Vaultwarden",
+  "icon": "fas fa-lock",
+  "url": "http://vaultwarden.127.0.0.1.traefik.me:9000",
+  "category": "SECURITY",
+  "tags": ["passwords", "secrets", "bitwarden"]
+}
