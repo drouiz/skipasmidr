@@ -19,16 +19,22 @@ from typing import Optional, Dict, List, Set
 try:
     from loguru import logger
 except ImportError:
-    print("Installing loguru...")
-    subprocess.run([sys.executable, "-m", "pip", "install", "loguru"], check=True)
-    from loguru import logger
+    print("loguru not installed. Run: uv sync")
+    sys.exit(1)
 
 try:
     import yaml
 except ImportError:
-    print("Installing pyyaml...")
-    subprocess.run([sys.executable, "-m", "pip", "install", "pyyaml"], check=True)
-    import yaml
+    print("pyyaml not installed. Run: uv sync")
+    sys.exit(1)
+
+# Add libs to path for imports
+sys.path.insert(0, str(Path(__file__).parent.resolve()))
+
+try:
+    from libs.dashboard import DashboardManager
+except ImportError:
+    DashboardManager = None  # Fallback if libs not available
 
 # Configure loguru
 logger.remove()
@@ -399,6 +405,9 @@ def docker_compose_unified(action: str, compose_file: Path = None) -> bool:
         cmd.append(action)
 
     ok, _ = run_command(cmd, cwd=TEMP_DIR)
+    # Flush output to ensure it's displayed
+    sys.stdout.flush()
+    sys.stderr.flush()
     return ok
 
 
@@ -407,7 +416,161 @@ def docker_compose_unified(action: str, compose_file: Path = None) -> bool:
 # ============================================================================
 
 def regenerate_dashy(active_services: List[str], all_services: dict, include_core: bool = True):
-    """Regenerate Dashy configuration."""
+    """Regenerate Dashy configuration using DashboardManager."""
+    if DashboardManager is None:
+        logger.warning("DashboardManager not available, using legacy method")
+        _legacy_regenerate_dashy(active_services, all_services, include_core)
+        return
+
+    logger.debug("Regenerating Dashy...")
+    dashboard_config = load_dashboard_config()
+    external_links = load_external_links()
+
+    # Use DashboardManager but filter by active services
+    manager = DashboardManager(BASE_DIR)
+    logger.debug("Collecting service fragments...")
+    manager.collect()
+    logger.debug(f"Collected {len(manager.fragments)} fragments")
+
+    # Build list of services to show: core + active
+    core_names = list(all_services.get("core", {}).keys()) if include_core else []
+    services_to_show = set(core_names + active_services)
+
+    # Filter fragments to only show active services
+    manager.fragments = [
+        f for f in manager.fragments
+        if f.service_path and (
+            f.service_path.parent.name in services_to_show or
+            f.category.upper() == "CORE"
+        )
+    ]
+
+    # Add external links
+    if external_links:
+        manager.add_external_links(external_links)
+
+    # Generate with base config
+    base_config = {
+        "pageInfo": {
+            "title": dashboard_config.get("title", "Dev Infrastructure"),
+            "description": dashboard_config.get("description", "Development Dashboard"),
+            "navLinks": []
+        },
+        "appConfig": {
+            "theme": dashboard_config.get("theme", "glass"),
+            "layout": "auto",
+            "iconSize": "medium"
+        }
+    }
+
+    output_path = CORE_DIR / "dashy" / "conf.yml"
+    manager.generate_dashy(output_path, base_config)
+
+    # Restart Dashy to load new config
+    run_command(["docker", "restart", "dashy-infra"], capture=True)
+    logger.success("Dashy updated")
+
+
+def regenerate_heimdall(active_services: List[str], all_services: dict):
+    """Regenerate Heimdall using DashboardManager."""
+    if DashboardManager is None:
+        logger.warning("DashboardManager not available, using legacy method")
+        _legacy_regenerate_heimdall(active_services, all_services)
+        return
+
+    logger.debug("Regenerating Heimdall...")
+
+    # Use DashboardManager
+    manager = DashboardManager(BASE_DIR)
+    logger.debug("Collecting service fragments for Heimdall...")
+    manager.collect()
+
+    # Add external links
+    external_links = load_external_links()
+    if external_links:
+        manager.add_external_links(external_links)
+
+    # Import to database
+    db_path = VOLUMES_DIR / "heimdall" / "www" / "app.sqlite"
+    if db_path.exists():
+        logger.debug(f"Importing to Heimdall database: {db_path}")
+        try:
+            imported, skipped = manager.generate_heimdall(db_path=db_path)
+            logger.success(f"Heimdall updated: {imported} added, {skipped} skipped")
+        except Exception as e:
+            logger.warning(f"Heimdall import failed: {e}")
+    else:
+        logger.warning("Heimdall database not found (start Heimdall first)")
+
+
+def regenerate_homepage(active_services: List[str], all_services: dict, include_core: bool = True):
+    """Regenerate Homepage configuration using DashboardManager."""
+    if DashboardManager is None:
+        logger.warning("DashboardManager not available for Homepage")
+        return
+
+    logger.debug("Regenerating Homepage...")
+    dashboard_config = load_dashboard_config()
+    external_links = load_external_links()
+
+    # Use DashboardManager
+    manager = DashboardManager(BASE_DIR)
+    manager.collect()
+
+    # Build list of services to show: core + active
+    core_names = list(all_services.get("core", {}).keys()) if include_core else []
+    services_to_show = set(core_names + active_services)
+
+    # Filter fragments to only show active services
+    manager.fragments = [
+        f for f in manager.fragments
+        if f.service_path and (
+            f.service_path.parent.name in services_to_show or
+            f.category.upper() == "CORE"
+        )
+    ]
+
+    # Add external links
+    if external_links:
+        manager.add_external_links(external_links)
+
+    # Generate with base config
+    base_config = {
+        "title": dashboard_config.get("title", "Dev Infrastructure"),
+        "theme": "dark",
+        "color": "slate",
+    }
+
+    homepage_dir = VOLUMES_DIR / "homepage"
+    manager.generate_homepage(homepage_dir, base_config)
+
+    # Restart Homepage
+    run_command(["docker", "restart", "homepage-infra"], capture=True)
+    logger.success("Homepage updated")
+
+
+def regenerate_all_dashboards(active_services: List[str], all_services: dict):
+    """Regenerate all enabled dashboards."""
+    logger.info("Updating dashboards...")
+    dashboard_config = load_dashboard_config()
+    enabled = dashboard_config.get("enabled_dashboards", ["dashy"])
+
+    if "dashy" in enabled:
+        logger.info("  Updating Dashy...")
+        regenerate_dashy(active_services, all_services, include_core=True)
+    if "homepage" in enabled:
+        logger.info("  Updating Homepage...")
+        regenerate_homepage(active_services, all_services)
+    if "heimdall" in enabled:
+        logger.info("  Updating Heimdall...")
+        regenerate_heimdall(active_services, all_services)
+
+    logger.info("Dashboards updated")
+
+
+# Legacy fallback functions (used if DashboardManager not available)
+def _legacy_regenerate_dashy(active_services: List[str], all_services: dict, include_core: bool = True):
+    """Legacy Dashy regeneration without DashboardManager."""
     dashboard_config = load_dashboard_config()
     external_links = load_external_links()
 
@@ -427,7 +590,6 @@ def regenerate_dashy(active_services: List[str], all_services: dict, include_cor
 
     categories = {}
 
-    # Always include core
     if include_core:
         for core_name in ["traefik", "dashy", "portainer"]:
             core_service = find_service(core_name, all_services)
@@ -445,23 +607,18 @@ def regenerate_dashy(active_services: List[str], all_services: dict, include_cor
                         "tags": fragment.get("tags", [])
                     })
 
-    # Active services
     for service_name in active_services:
         if service_name in ["traefik", "dashy", "portainer"]:
-            continue  # Already included in core
-
+            continue
         service = find_service(service_name, all_services)
         if not service:
             continue
-
         fragment_file = service["path"] / "dashy.fragment.json"
         if fragment_file.exists():
             fragment = load_json(fragment_file)
             category = fragment.get("category", "OTHER")
-
             if category not in categories:
                 categories[category] = []
-
             categories[category].append({
                 "title": fragment.get("name", service_name),
                 "icon": fragment.get("icon", "fas fa-cube"),
@@ -469,7 +626,6 @@ def regenerate_dashy(active_services: List[str], all_services: dict, include_cor
                 "tags": fragment.get("tags", [])
             })
 
-    # Add external links section
     if external_links:
         categories["EXTERNAL"] = []
         for link in external_links:
@@ -480,187 +636,40 @@ def regenerate_dashy(active_services: List[str], all_services: dict, include_cor
                 "tags": link.get("tags", ["external"])
             })
 
-    # Category icons
     category_icons = {
-        "CORE": "fas fa-cog",
-        "INFRA": "fas fa-database",
-        "DATABASES": "fas fa-database",
-        "MESSAGING": "fas fa-envelope",
-        "STORAGE": "fas fa-hdd",
-        "DATA": "fas fa-chart-bar",
-        "AUTOMATION": "fas fa-robot",
-        "MONITORING": "fas fa-chart-line",
-        "SECURITY": "fas fa-shield-alt",
-        "AUTH": "fas fa-key",
-        "SOCIAL": "fas fa-users",
-        "IOT": "fas fa-microchip",
-        "LOWCODE": "fas fa-puzzle-piece",
-        "DEVELOPER": "fas fa-code",
-        "CORPORATIVO": "fas fa-building",
-        "AI": "fas fa-brain",
-        "VECTORDB": "fas fa-vector-square",
-        "OPS": "fas fa-server",
-        "DEVOPS": "fas fa-infinity",
-        "DNS": "fas fa-globe",
-        "EMAIL": "fas fa-envelope",
-        "NOTIFICATIONS": "fas fa-bell",
-        "WIKI": "fas fa-book",
-        "DOCUMENTS": "fas fa-file-alt",
-        "SCHEDULING": "fas fa-calendar",
-        "ANALYTICS": "fas fa-chart-pie",
-        "DASHBOARD": "fas fa-tachometer-alt",
-        "EXTERNAL": "fas fa-external-link-alt",
-        "CRM": "fas fa-address-book"
+        "CORE": "fas fa-cog", "INFRA": "fas fa-database", "DATABASES": "fas fa-database",
+        "AI": "fas fa-brain", "MONITORING": "fas fa-chart-line", "EXTERNAL": "fas fa-external-link-alt"
     }
+    category_order = ["CORE", "INFRA", "DATABASES", "AI", "MONITORING", "EXTERNAL", "OTHER"]
 
-    # Preferred order
-    category_order = ["CORE", "INFRA", "DATABASES", "MESSAGING", "AI", "DATA", "MONITORING",
-                      "AUTOMATION", "DEVELOPER", "DEVOPS", "CORPORATIVO", "CRM", "LOWCODE",
-                      "SECURITY", "AUTH", "SOCIAL", "IOT", "OPS", "DNS", "EMAIL",
-                      "NOTIFICATIONS", "DASHBOARD", "EXTERNAL", "OTHER"]
-
-    # Sort categories
-    sorted_categories = []
-    for cat in category_order:
-        if cat in categories:
-            sorted_categories.append(cat)
-    for cat in categories:
-        if cat not in sorted_categories:
-            sorted_categories.append(cat)
+    sorted_categories = [c for c in category_order if c in categories]
+    sorted_categories.extend([c for c in categories if c not in sorted_categories])
 
     for category in sorted_categories:
-        items = categories[category]
-        section = {
+        dashy_config["sections"].append({
             "name": category,
             "icon": category_icons.get(category.upper(), "fas fa-folder"),
-            "items": items
-        }
-        dashy_config["sections"].append(section)
+            "items": categories[category]
+        })
 
-    # Save
     dashy_dir = CORE_DIR / "dashy"
     dashy_dir.mkdir(parents=True, exist_ok=True)
-    config_file = dashy_dir / "conf.yml"
-    save_yaml(config_file, dashy_config)
-
-    # Restart Dashy to load new config
+    save_yaml(dashy_dir / "conf.yml", dashy_config)
     run_command(["docker", "restart", "dashy-infra"], capture=True)
-    logger.success("Dashy updated")
+    logger.success("Dashy updated (legacy)")
 
 
-def regenerate_homepage(active_services: List[str], all_services: dict):
-    """Regenerate Homepage configuration."""
-    dashboard_config = load_dashboard_config()
-    external_links = load_external_links()
-
-    homepage_dir = VOLUMES_DIR / "homepage"
-    homepage_dir.mkdir(parents=True, exist_ok=True)
-
-    # settings.yaml
-    settings = {
-        "title": dashboard_config.get("title", "Dev Infrastructure"),
-        "theme": "dark",
-        "color": "slate",
-        "headerStyle": "clean",
-        "layout": {
-            "CORE": {"style": "row", "columns": 3},
-            "INFRA": {"style": "row", "columns": 4},
-            "SERVICES": {"style": "row", "columns": 4}
-        }
-    }
-    save_yaml(homepage_dir / "settings.yaml", settings)
-
-    # services.yaml
-    services_config = []
-
-    # Core services
-    core_items = []
-    for core_name in ["traefik", "dashy", "portainer"]:
-        core_items.append({
-            core_name.capitalize(): {
-                "href": f"http://{core_name}.127.0.0.1.traefik.me:9000",
-                "icon": f"si-{core_name}" if core_name != "dashy" else "mdi-view-dashboard",
-                "description": f"{core_name.capitalize()} service"
-            }
-        })
-    if core_items:
-        services_config.append({"CORE": core_items})
-
-    # Active services grouped by category
-    categories = {}
-    for service_name in active_services:
-        if service_name in ["traefik", "dashy", "portainer"]:
-            continue
-        service = find_service(service_name, all_services)
-        if service:
-            cat = service["category"].split("/")[-1].upper() if "/" in service["category"] else "OTHER"
-            if cat not in categories:
-                categories[cat] = []
-            categories[cat].append({
-                service_name.capitalize(): {
-                    "href": f"http://{service_name}.127.0.0.1.traefik.me:9000",
-                    "description": f"{service_name} service"
-                }
-            })
-
-    for cat, items in categories.items():
-        services_config.append({cat: items})
-
-    # External links
-    if external_links:
-        ext_items = []
-        for link in external_links:
-            ext_items.append({
-                link.get("name", "Link"): {
-                    "href": link.get("url", "#"),
-                    "icon": link.get("icon", "mdi-link"),
-                    "description": link.get("description", "External link")
-                }
-            })
-        services_config.append({"EXTERNAL": ext_items})
-
-    save_yaml(homepage_dir / "services.yaml", services_config)
-
-    # widgets.yaml
-    widgets = [
-        {"resources": {"cpu": True, "memory": True, "disk": "/"}},
-        {"datetime": {"format": {"dateStyle": "short", "timeStyle": "short"}}}
-    ]
-    save_yaml(homepage_dir / "widgets.yaml", widgets)
-
-    # bookmarks.yaml
-    bookmarks = []
-    if external_links:
-        bookmarks.append({
-            "External Services": [
-                {link.get("name"): [{"href": link.get("url")}]}
-                for link in external_links
-            ]
-        })
-    save_yaml(homepage_dir / "bookmarks.yaml", bookmarks)
-
-    # Restart Homepage
-    run_command(["docker", "restart", "homepage-infra"], capture=True)
-    logger.success("Homepage updated")
-
-
-def regenerate_heimdall(active_services: List[str], all_services: dict):
-    """Heimdall uses database-based config, just restart it."""
-    run_command(["docker", "restart", "heimdall-infra"], capture=True)
-    logger.success("Heimdall restarted")
-
-
-def regenerate_all_dashboards(active_services: List[str], all_services: dict):
-    """Regenerate all enabled dashboards."""
-    dashboard_config = load_dashboard_config()
-    enabled = dashboard_config.get("enabled_dashboards", ["dashy"])
-
-    if "dashy" in enabled:
-        regenerate_dashy(active_services, all_services, include_core=True)
-    if "homepage" in enabled:
-        regenerate_homepage(active_services, all_services)
-    if "heimdall" in enabled:
-        regenerate_heimdall(active_services, all_services)
+def _legacy_regenerate_heimdall(active_services: List[str], all_services: dict):
+    """Legacy Heimdall regeneration."""
+    import_script = CORE_DIR / "heimdall" / "import_apps.py"
+    if import_script.exists():
+        ok, _ = run_command([sys.executable, str(import_script)], capture=True)
+        if ok:
+            logger.success("Heimdall updated (legacy)")
+        else:
+            logger.warning("Heimdall import had issues")
+    else:
+        run_command(["docker", "restart", "heimdall-infra"], capture=True)
 
 
 # ============================================================================
@@ -689,11 +698,12 @@ def cmd_core(args):
         # Regenerate dashboards with core
         regenerate_all_dashboards([], services)
 
-        print()
         logger.info("Access URLs:")
-        print("  - http://traefik.127.0.0.1.traefik.me:9000 (Dashboard)")
-        print("  - http://dashy.127.0.0.1.traefik.me:9000")
-        print("  - http://portainer.127.0.0.1.traefik.me:9000")
+        logger.info("  - http://traefik.127.0.0.1.traefik.me:9000 (Traefik)")
+        logger.info("  - http://dashy.127.0.0.1.traefik.me:9000 (Dashy)")
+        logger.info("  - http://heimdall.127.0.0.1.traefik.me:9000 (Heimdall)")
+        logger.info("  - http://homepage.127.0.0.1.traefik.me:9000 (Homepage)")
+        logger.info("  - http://portainer.127.0.0.1.traefik.me:9000 (Portainer)")
 
     elif args.action == "down":
         logger.info("Stopping Core...")
@@ -708,6 +718,12 @@ def cmd_core(args):
 
 def cmd_up(args):
     """Start services (replaces existing)."""
+    # Redirect 'up core' to 'core up'
+    if args.services == ["core"]:
+        logger.info("Redirecting to 'core up'...")
+        args.action = "up"
+        return cmd_core(args)
+
     ensure_network()
     services = discover_services()
     state = load_state()
@@ -756,11 +772,12 @@ def cmd_up(args):
     # Regenerate dashboards
     regenerate_all_dashboards(state["active"], services)
 
-    # URLs
-    print()
-    logger.info("Access URLs:")
-    for name in sorted(all_to_start - core_services):
-        print(f"  - http://{name}.127.0.0.1.traefik.me:9000")
+    # URLs (only show services that actually exist)
+    active_non_core = [n for n in sorted(all_to_start - core_services) if find_service(n, services)]
+    if active_non_core:
+        logger.info("Access URLs:")
+        for name in active_non_core:
+            logger.info(f"  - http://{name}.127.0.0.1.traefik.me:9000")
 
 
 def cmd_add(args):
@@ -812,10 +829,9 @@ def cmd_add(args):
     regenerate_all_dashboards(state["active"], services)
 
     # New URLs
-    print()
     logger.info("New URLs:")
     for name in sorted(new_to_add):
-        print(f"  - http://{name}.127.0.0.1.traefik.me:9000")
+        logger.info(f"  - http://{name}.127.0.0.1.traefik.me:9000")
 
 
 def cmd_down(args):
@@ -902,19 +918,19 @@ def cmd_status(args):
     )
 
     if ok and output.strip():
-        print(output)
+        logger.info(output)
     else:
-        print("No running containers")
+        logger.info("No running containers")
 
     # Running services list
     running = get_running_services()
     if running:
-        print(f"\nRunning services (this environment): {', '.join(running)}")
+        logger.info(f"Running services (this environment): {', '.join(running)}")
 
     # Saved state
     active = state.get("active", [])
     if active:
-        print(f"Configured services: {', '.join(sorted(active))}")
+        logger.info(f"Configured services: {', '.join(sorted(active))}")
 
 
 def cmd_list(args):
@@ -926,15 +942,15 @@ def cmd_list(args):
         for category in ["infra", "modules"]:
             for name, service in services[category].items():
                 if args.category.lower() in service["category"].lower():
-                    print(f"  - {name}")
+                    logger.info(f"  - {name}")
     else:
         logger.info("Available services")
 
-        print(f"\nCORE:")
+        logger.info("CORE:")
         for name in sorted(services["core"].keys()):
-            print(f"  - {name}")
+            logger.info(f"  - {name}")
 
-        print(f"\nINFRA:")
+        logger.info("INFRA:")
         infra_cats = {}
         for name, service in services["infra"].items():
             cat = service["category"].split("/")[1] if "/" in service["category"] else "other"
@@ -943,9 +959,9 @@ def cmd_list(args):
             infra_cats[cat].append(name)
 
         for cat, items in sorted(infra_cats.items()):
-            print(f"  [{cat}] {', '.join(sorted(items))}")
+            logger.info(f"  [{cat}] {', '.join(sorted(items))}")
 
-        print(f"\nMODULES:")
+        logger.info("MODULES:")
         mod_cats = {}
         for name, service in services["modules"].items():
             cat = service["category"].split("/")[1] if "/" in service["category"] else "other"
@@ -954,7 +970,7 @@ def cmd_list(args):
             mod_cats[cat].append(name)
 
         for cat, items in sorted(mod_cats.items()):
-            print(f"  [{cat}] {', '.join(sorted(items))}")
+            logger.info(f"  [{cat}] {', '.join(sorted(items))}")
 
 
 def cmd_running(args):
@@ -964,7 +980,7 @@ def cmd_running(args):
     if running:
         logger.info(f"Running services ({len(running)} total):")
         for svc in running:
-            print(f"  - {svc}")
+            logger.info(f"  - {svc}")
     else:
         logger.info("No services running in this environment")
 
@@ -979,21 +995,21 @@ def cmd_info(args):
         return
 
     logger.info(f"Info: {args.service}")
-    print(f"Category: {service['category']}")
-    print(f"Path: {service['path']}")
+    logger.info(f"Category: {service['category']}")
+    logger.info(f"Path: {service['path']}")
 
     deps = get_dependencies(args.service)
     if deps:
-        print(f"Dependencies: {', '.join(deps)}")
+        logger.info(f"Dependencies: {', '.join(deps)}")
 
-    print(f"URL: http://{args.service}.127.0.0.1.traefik.me:9000")
+    logger.info(f"URL: http://{args.service}.127.0.0.1.traefik.me:9000")
 
     # README
     readme = service["path"] / "README.md"
     if readme.exists():
-        print(f"\nREADME:")
+        logger.info("README:")
         with open(readme, "r", encoding="utf-8") as f:
-            print(f.read()[:2000])
+            logger.info(f.read()[:2000])
 
 
 def cmd_profile(args):
@@ -1006,8 +1022,8 @@ def cmd_profile(args):
                 name = profile_file.stem
                 desc = profile.get("description", "")
                 profile_services = profile.get("services", [])
-                print(f"  - {name}: {desc}")
-                print(f"    Services: {', '.join(profile_services)}")
+                logger.info(f"  - {name}: {desc}")
+                logger.info(f"    Services: {', '.join(profile_services)}")
         return
 
     # Load and execute profile

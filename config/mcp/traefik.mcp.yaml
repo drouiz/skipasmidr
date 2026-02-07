@@ -1,0 +1,13 @@
+# Traefik MCP Configuration
+type: traefik
+
+config:
+  api_url: http://traefik-infra:8080
+  # api_user: ${TRAEFIK_API_USER}
+  # api_password: ${TRAEFIK_API_PASSWORD}
+
+# Container settings for this MCP
+container:
+  name: traefik-mcp-infra
+  depends_on:
+    - traefik-infra

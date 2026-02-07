@@ -1,0 +1,15 @@
+# PostgreSQL MCP Configuration
+type: postgres
+
+config:
+  host: ${POSTGRES_HOST}
+  port: ${EXPOSE_POSTGRES_PORT}
+  user: ${POSTGRES_USER}
+  password: ${POSTGRES_PASSWORD}
+  database: postgres
+
+# Container settings for this MCP
+container:
+  name: postgres-mcp-infra
+  depends_on:
+    - postgres-infra

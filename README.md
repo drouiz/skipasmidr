@@ -8,20 +8,20 @@ Modular development infrastructure with Docker Compose. Start only what you need
 # Install dependencies with uv
 uv sync
 
-# Or with pip
-pip install loguru pyyaml
+# Run with uv
+uv run python deploy.py core up
 
 # Start core (Traefik, Dashy, Portainer)
-python deploy.py core up
+uv run python deploy.py core up
 
 # Add services
-python deploy.py add n8n postgres grafana
+uv run python deploy.py add n8n postgres grafana
 
 # View status
-python deploy.py status
+uv run python deploy.py status
 
 # List running services
-python deploy.py running
+uv run python deploy.py running
 ```
 
 ## Architecture

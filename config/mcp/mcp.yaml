@@ -1,0 +1,41 @@
+# MCP Configuration
+# Controls which MCP servers are enabled and their settings
+
+# Global MCP settings
+enabled: true
+
+# Core MCPs - always run with core services (can be disabled)
+core:
+  docker:
+    enabled: true
+    description: Docker container management
+  traefik:
+    enabled: true
+    description: Traefik reverse proxy management
+    config:
+      api_url: http://traefik-infra:8080
+
+# Database MCPs - enabled based on running services
+databases:
+  postgres:
+    enabled: true
+    description: PostgreSQL database
+    # Config comes from credentials.env (POSTGRES_HOST, etc.)
+  mariadb:
+    enabled: true
+    description: MariaDB/MySQL database
+    # Config comes from credentials.env (MYSQL_HOST, etc.)
+  mongo:
+    enabled: false
+    description: MongoDB database
+
+# Container runtime
+container:
+  mode: docker  # docker or podman
+  timeout: 30
+
+# MCP server container settings
+server:
+  image: python:3.12-slim
+  network: infra-network
+  restart: unless-stopped

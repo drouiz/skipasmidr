@@ -1,0 +1,12 @@
+# Docker MCP Configuration
+type: docker
+
+config:
+  timeout: 30
+
+# Container settings for this MCP
+container:
+  name: docker-mcp-infra
+  # Needs access to Docker socket
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro

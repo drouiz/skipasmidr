@@ -1,0 +1,8 @@
+{
+  "title": "Dashy",
+  "url": "http://dashy.127.0.0.1.traefik.me:9000",
+  "colour": "#9b59b6",
+  "icon": "fas fa-th",
+  "description": "Dashboard",
+  "pinned": true
+}

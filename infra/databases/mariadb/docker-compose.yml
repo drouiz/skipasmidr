@@ -10,6 +10,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-default}
     volumes:
       - ../../../volumes/mariadb:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d:ro
     ports:
       - "${EXPOSE_MYSQL_PORT:-127.0.0.1:3306}:3306"
     networks:
@@ -25,12 +26,13 @@ services:
     container_name: phpmyadmin-infra
     restart: unless-stopped
     environment:
-      PMA_HOST: mariadb
+      PMA_HOST: mariadb-infra
       PMA_USER: root
       PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-admin123}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.phpmyadmin.rule=Host(`phpmyadmin.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.phpmyadmin.entrypoints=web"
       - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
     networks:
       - infra-network

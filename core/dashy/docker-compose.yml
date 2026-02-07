@@ -8,6 +8,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashy.rule=Host(`dashy.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.dashy.entrypoints=web"
       - "traefik.http.services.dashy.loadbalancer.server.port=8080"
     networks:
       - infra-network

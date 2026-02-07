@@ -1,0 +1,15 @@
+# MariaDB MCP Configuration
+type: mariadb
+
+config:
+  host: ${MYSQL_HOST}
+  port: 3306
+  user: ${MYSQL_USER}
+  password: ${MYSQL_PASSWORD}
+  database: ""
+
+# Container settings for this MCP
+container:
+  name: mariadb-mcp-infra
+  depends_on:
+    - mariadb-infra

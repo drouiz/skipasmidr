@@ -2,8 +2,8 @@
 # Choose which dashboards to enable: dashy, homepage, heimdall
 enabled_dashboards:
   - dashy
-  # - homepage
-  # - heimdall
+  - heimdall
+  - homepage
 
 # Dashy theme: glass, nord, material, dark, etc.
 theme: glass

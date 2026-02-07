@@ -9,17 +9,11 @@ links:
     description: Digital Ocean Dashboard
     tags: [cloud, hosting]
 
-  - name: AWS Console
-    url: https://console.aws.amazon.com
-    icon: fab fa-aws
-    description: Amazon Web Services
-    tags: [cloud, aws]
-
   # Version Control
   - name: GitHub
-    url: https://github.com
+    url: https://github.com/drouiz
     icon: fab fa-github
-    description: GitHub repositories
+    description: My GitHub Profile
     tags: [git, code]
 
   - name: GitLab
@@ -35,28 +29,21 @@ links:
     description: Google Mail
     tags: [email, communication]
 
-  - name: Slack
-    url: https://slack.com
-    icon: fab fa-slack
-    description: Team communication
-    tags: [chat, communication]
+  # Personal Websites
+  - name: drouiz.com
+    url: https://drouiz.com
+    icon: fas fa-globe
+    description: Personal website
+    tags: [personal, web]
 
-  # Productivity
-  - name: Notion
-    url: https://notion.so
-    icon: fas fa-book
-    description: Notes and documentation
-    tags: [docs, notes]
+  - name: Elegant Maker
+    url: https://elegant_maker.com
+    icon: fas fa-palette
+    description: Elegant Maker website
+    tags: [personal, web]
 
-  - name: Google Drive
-    url: https://drive.google.com
-    icon: fab fa-google-drive
-    description: Cloud storage
-    tags: [storage, files]
-
-  # Add your own links below:
-  # - name: My Service
-  #   url: https://example.com
-  #   icon: fas fa-link
-  #   description: Description here
-  #   tags: [custom]
+  - name: Beserker Zen
+    url: https://beserkerzen.com
+    icon: fas fa-yin-yang
+    description: Beserker Zen website
+    tags: [personal, web]

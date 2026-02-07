@@ -55,9 +55,13 @@ Combinar multiples repositorios en uno.
 npm config set registry http://nexus.127.0.0.1.traefik.me:9000/repository/npm-group/
 ```
 
-## Configurar pip
+## Configurar uv/pip
 
 ```bash
+# Con uv
+uv pip install --index-url http://nexus.127.0.0.1.traefik.me:9000/repository/pypi-group/simple/ paquete
+
+# Con pip
 pip install --index-url http://nexus.127.0.0.1.traefik.me:9000/repository/pypi-group/simple/ paquete
 ```
 

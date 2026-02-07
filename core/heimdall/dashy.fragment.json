@@ -1,0 +1,8 @@
+{
+  "name": "Heimdall",
+  "icon": "fas fa-home",
+  "url": "http://heimdall.127.0.0.1.traefik.me:9000",
+  "category": "CORE",
+  "description": "Application Dashboard",
+  "tags": ["dashboard", "home"]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Homepage",
+  "icon": "fas fa-home",
+  "url": "http://homepage.127.0.0.1.traefik.me:9000",
+  "category": "CORE",
+  "tags": ["dashboard", "home"]
+}

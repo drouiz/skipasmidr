@@ -4,9 +4,7 @@ services:
     container_name: n8n-infra
     restart: unless-stopped
     environment:
-      - N8N_BASIC_AUTH_ACTIVE=true
-      - N8N_BASIC_AUTH_USER=${N8N_USER:-admin}
-      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD:-admin123}
+      - N8N_SECURE_COOKIE=false
       - N8N_HOST=n8n.127.0.0.1.traefik.me
       - N8N_PORT=5678
       - N8N_PROTOCOL=http

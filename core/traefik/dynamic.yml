@@ -1,0 +1,57 @@
+http:
+  routers:
+    # Traefik Dashboard
+    traefik-dashboard:
+      rule: "Host(`traefik.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: api@internal
+
+    # Dashy
+    dashy:
+      rule: "Host(`dashy.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: dashy
+
+    # Portainer
+    portainer:
+      rule: "Host(`portainer.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: portainer
+
+    # Heimdall
+    heimdall:
+      rule: "Host(`heimdall.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: heimdall
+
+    # Homepage
+    homepage:
+      rule: "Host(`homepage.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: homepage
+
+  services:
+    dashy:
+      loadBalancer:
+        servers:
+          - url: "http://dashy-infra:8080"
+
+    portainer:
+      loadBalancer:
+        servers:
+          - url: "http://portainer-infra:9000"
+
+    heimdall:
+      loadBalancer:
+        servers:
+          - url: "http://heimdall-infra:80"
+
+    homepage:
+      loadBalancer:
+        servers:
+          - url: "http://homepage-infra:3000"

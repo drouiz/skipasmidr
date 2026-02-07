@@ -10,6 +10,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.node-red.rule=Host(`nodered.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.node-red.entrypoints=web"
       - "traefik.http.services.node-red.loadbalancer.server.port=1880"
     networks:
       - infra-network

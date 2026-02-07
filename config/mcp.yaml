@@ -1,0 +1,82 @@
+# MCP (Model Context Protocol) Configuration
+# Enable MCP servers for AI integration with your infrastructure
+
+# Global MCP settings
+enabled: false
+port_start: 3100
+
+# Which services should have MCP servers
+# Each service can expose different capabilities
+services:
+  # Databases - expose query capabilities
+  postgres:
+    enabled: true
+    port: 3101
+    capabilities:
+      - query
+      - schema
+      - tables
+
+  mariadb:
+    enabled: true
+    port: 3102
+    capabilities:
+      - query
+      - schema
+      - tables
+
+  redis:
+    enabled: true
+    port: 3103
+    capabilities:
+      - get
+      - set
+      - keys
+      - info
+
+  mongo:
+    enabled: true
+    port: 3104
+    capabilities:
+      - query
+      - collections
+      - stats
+
+  # Infrastructure - expose management capabilities
+  docker:
+    enabled: true
+    port: 3110
+    capabilities:
+      - containers
+      - images
+      - logs
+      - stats
+
+  # File system access (volumes)
+  filesystem:
+    enabled: true
+    port: 3120
+    capabilities:
+      - read
+      - write
+      - list
+    paths:
+      - /volumes
+
+# Claude Desktop integration
+# Add this to your claude_desktop_config.json
+claude_desktop_example: |
+  {
+    "mcpServers": {
+      "infra-postgres": {
+        "command": "python",
+        "args": ["path/to/mcp/postgres_server.py"],
+        "env": {
+          "POSTGRES_HOST": "localhost",
+          "POSTGRES_PORT": "5432",
+          "POSTGRES_USER": "admin",
+          "POSTGRES_PASSWORD": "admin123"
+        }
+      }
+    }
+  }

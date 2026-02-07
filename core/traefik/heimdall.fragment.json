@@ -1,0 +1,8 @@
+{
+  "title": "Traefik",
+  "url": "http://traefik.127.0.0.1.traefik.me:9000",
+  "colour": "#3498db",
+  "icon": "fas fa-route",
+  "description": "Reverse Proxy",
+  "pinned": true
+}

@@ -14,7 +14,11 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.stackstorm.rule=Host(`stackstorm.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.stackstorm.entrypoints=web"
       - "traefik.http.services.stackstorm.loadbalancer.server.port=443"
+      - "traefik.http.services.stackstorm.loadbalancer.server.scheme=https"
+      - "traefik.http.serversTransports.stackstorm-transport.insecureSkipVerify=true"
+      - "traefik.http.services.stackstorm.loadbalancer.serversTransport=stackstorm-transport@docker"
     networks:
       - infra-network
 
