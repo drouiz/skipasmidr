@@ -6,6 +6,7 @@ links:
   - name: Digital Ocean
     url: https://cloud.digitalocean.com
     icon: fas fa-cloud
+    homepage_icon: si-digitalocean
     description: Digital Ocean Dashboard
     tags: [cloud, hosting]
 
@@ -13,12 +14,14 @@ links:
   - name: GitHub
     url: https://github.com/drouiz
     icon: fab fa-github
+    homepage_icon: si-github
     description: My GitHub Profile
     tags: [git, code]
 
   - name: GitLab
     url: https://gitlab.com
     icon: fab fa-gitlab
+    homepage_icon: si-gitlab
     description: GitLab repositories
     tags: [git, code]
 
@@ -26,6 +29,7 @@ links:
   - name: Gmail
     url: https://mail.google.com
     icon: fas fa-envelope
+    homepage_icon: si-gmail
     description: Google Mail
     tags: [email, communication]
 
@@ -33,17 +37,20 @@ links:
   - name: drouiz.com
     url: https://drouiz.com
     icon: fas fa-globe
+    homepage_icon: mdi-web
     description: Personal website
     tags: [personal, web]
 
   - name: Elegant Maker
     url: https://elegant_maker.com
     icon: fas fa-palette
+    homepage_icon: mdi-palette
     description: Elegant Maker website
     tags: [personal, web]
 
   - name: Beserker Zen
     url: https://beserkerzen.com
     icon: fas fa-yin-yang
+    homepage_icon: mdi-yin-yang
     description: Beserker Zen website
     tags: [personal, web]

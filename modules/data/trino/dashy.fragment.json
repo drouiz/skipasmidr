@@ -1,0 +1,8 @@
+{
+  "name": "Trino",
+  "icon": "fas fa-search-dollar",
+  "url": "http://trino.127.0.0.1.traefik.me:9000",
+  "category": "DATA",
+  "description": "Distributed SQL Query Engine",
+  "tags": ["sql", "query", "analytics", "presto", "data"]
+}

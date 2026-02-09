@@ -1,6 +1,7 @@
 {
   "name": "Airflow",
   "icon": "fas fa-wind",
+  "homepage_icon": "si-apacheairflow",
   "url": "http://airflow.127.0.0.1.traefik.me:9000",
   "category": "DATA",
   "tags": ["orchestration", "workflow", "etl"]

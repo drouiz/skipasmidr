@@ -82,13 +82,14 @@ class DashboardManager:
         Add external links as fragments.
 
         Args:
-            links: List of link dictionaries with name, url, icon, etc.
+            links: List of link dictionaries with name, url, icon, homepage_icon, etc.
         """
         for link in links:
             fragment = ServiceFragment(
                 name=link.get("name", link.get("title", "External")),
                 url=link.get("url", "#"),
                 icon=link.get("icon", "fas fa-external-link-alt"),
+                homepage_icon=link.get("homepage_icon", ""),
                 category="EXTERNAL",
                 description=link.get("description", ""),
                 color=link.get("color", link.get("colour", "#3498db")),

@@ -1,0 +1,8 @@
+{
+  "name": "Kroki",
+  "icon": "fas fa-sitemap",
+  "url": "http://kroki.127.0.0.1.traefik.me:9000",
+  "category": "EDITORS",
+  "description": "Diagrams as code (Mermaid, PlantUML, GraphViz...)",
+  "tags": ["diagrams", "mermaid", "plantuml", "graphviz"]
+}

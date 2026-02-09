@@ -1,3 +1,4 @@
-# Configurar repositorios de codigo aqui
-# load_from:
-#   - python_file: my_repository.py
+# Dagster workspace configuration
+# Add your code locations here
+
+load_from: []

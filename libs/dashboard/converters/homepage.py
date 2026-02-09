@@ -19,11 +19,13 @@ from libs.dashboard.fragment import ServiceFragment
 
 # Icon mapping from FontAwesome to Homepage format (mdi/si)
 ICON_MAP = {
+    # Basic MDI icons
     "fas fa-database": "mdi-database",
     "fas fa-brain": "mdi-brain",
     "fas fa-chart-line": "mdi-chart-line",
     "fas fa-cog": "mdi-cog",
     "fas fa-cube": "mdi-cube",
+    "fas fa-cubes": "mdi-hexagon-multiple",
     "fas fa-home": "mdi-home",
     "fas fa-th": "mdi-view-dashboard",
     "fas fa-external-link-alt": "mdi-open-in-new",
@@ -46,8 +48,18 @@ ICON_MAP = {
     "fas fa-key": "mdi-key",
     "fas fa-user": "mdi-account",
     "fas fa-users": "mdi-account-group",
+    "fas fa-wind": "mdi-weather-windy",
+    "fas fa-route": "mdi-routes",
+    "fas fa-project-diagram": "mdi-sitemap",
+    "fas fa-bolt": "mdi-lightning-bolt",
+    "fas fa-globe": "mdi-web",
+    "fas fa-palette": "mdi-palette",
+    "fas fa-yin-yang": "mdi-yin-yang",
+    "fab fa-docker": "si-docker",
+    "fab fa-github": "si-github",
+    "fab fa-gitlab": "si-gitlab",
     # Simple Icons (si-) for known services
-    "traefik": "si-traefik",
+    "traefik": "si-traefikproxy",
     "portainer": "si-portainer",
     "grafana": "si-grafana",
     "prometheus": "si-prometheus",
@@ -61,6 +73,9 @@ ICON_MAP = {
     "nginx": "si-nginx",
     "jenkins": "si-jenkins",
     "kubernetes": "si-kubernetes",
+    "airflow": "si-apacheairflow",
+    "n8n": "si-n8n",
+    "dagster": "si-dagster",
 }
 
 
@@ -124,9 +139,15 @@ class HomepageConverter(BaseConverter):
         Returns:
             Homepage service dictionary
         """
+        # Use homepage_icon if specified, otherwise auto-convert
+        if fragment.homepage_icon:
+            icon = fragment.homepage_icon
+        else:
+            icon = self._convert_icon(fragment.icon, fragment.name)
+
         item = {
             "href": fragment.url,
-            "icon": self._convert_icon(fragment.icon, fragment.name),
+            "icon": icon,
         }
 
         if fragment.description:

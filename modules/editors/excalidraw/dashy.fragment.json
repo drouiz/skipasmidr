@@ -1,0 +1,8 @@
+{
+  "name": "Excalidraw",
+  "icon": "fas fa-paint-brush",
+  "url": "http://excalidraw.127.0.0.1.traefik.me:9000",
+  "category": "EDITORS",
+  "description": "Whiteboard drawing tool",
+  "tags": ["drawing", "whiteboard", "diagrams", "sketch"]
+}

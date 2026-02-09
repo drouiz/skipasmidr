@@ -25,7 +25,8 @@ class ServiceFragment:
 
     Attributes:
         name: Display name of the service
-        icon: Icon (FontAwesome format: "fas fa-xxx")
+        icon: Icon for Dashy (FontAwesome format: "fas fa-xxx")
+        homepage_icon: Icon for Homepage (MDI/SI format: "mdi-xxx" or "si-xxx")
         url: Service URL
         category: Category for grouping (e.g., "DATABASES", "AI")
         description: Optional description
@@ -38,6 +39,7 @@ class ServiceFragment:
 
     name: str
     icon: str = "fas fa-cube"
+    homepage_icon: str = ""  # If empty, will be auto-converted from icon
     url: str = "#"
     category: str = "OTHER"
     description: str = ""
@@ -57,6 +59,7 @@ class ServiceFragment:
         return cls(
             name=data.get("name", data.get("title", "Unknown")),
             icon=data.get("icon", "fas fa-cube"),
+            homepage_icon=data.get("homepage_icon", ""),
             url=data.get("url", "#"),
             category=data.get("category", "OTHER").upper(),
             description=data.get("description", ""),
@@ -76,7 +79,7 @@ class ServiceFragment:
 
     def to_dict(self) -> dict:
         """Convert to dictionary."""
-        return {
+        result = {
             "name": self.name,
             "icon": self.icon,
             "url": self.url,
@@ -87,6 +90,9 @@ class ServiceFragment:
             "pinned": self.pinned,
             "enabled": self.enabled,
         }
+        if self.homepage_icon:
+            result["homepage_icon"] = self.homepage_icon
+        return result
 
 
 def collect_fragments(

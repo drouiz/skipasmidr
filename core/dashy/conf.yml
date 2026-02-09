@@ -43,6 +43,97 @@ sections:
     title: Traefik
     url: http://traefik.127.0.0.1.traefik.me:9000
   name: CORE
+- icon: fas fa-server
+  items:
+  - icon: fas fa-database
+    tags:
+    - database
+    - mysql
+    - mariadb
+    - admin
+    title: phpMyAdmin
+    url: http://phpmyadmin.127.0.0.1.traefik.me:9000
+  - icon: fas fa-database
+    tags:
+    - database
+    - postgresql
+    - admin
+    title: pgAdmin
+    url: http://pgadmin.127.0.0.1.traefik.me:9000
+  - icon: fas fa-bolt
+    tags:
+    - cache
+    - redis
+    - key-value
+    - admin
+    title: Redis Commander
+    url: http://redis.127.0.0.1.traefik.me:9000
+  name: INFRA
+- icon: fas fa-robot
+  items:
+  - icon: fas fa-project-diagram
+    tags:
+    - workflow
+    - automation
+    - integration
+    title: n8n
+    url: http://n8n.127.0.0.1.traefik.me:9000
+  name: AUTOMATION
+- icon: fas fa-building
+  items:
+  - icon: fas fa-briefcase
+    tags:
+    - erp
+    - crm
+    - invoicing
+    title: Dolibarr
+    url: http://dolibarr.127.0.0.1.traefik.me:9000
+  - icon: fas fa-bullhorn
+    tags:
+    - marketing
+    - automation
+    - email
+    title: Mautic
+    url: http://mautic.127.0.0.1.traefik.me:9000
+  - icon: fas fa-building
+    tags:
+    - erp
+    - crm
+    - business
+    title: Odoo
+    url: http://odoo.127.0.0.1.traefik.me:9000
+  - icon: fas fa-tasks
+    tags:
+    - project-management
+    - agile
+    - gantt
+    title: OpenProject
+    url: http://openproject.127.0.0.1.traefik.me:9000
+  name: CORPORATIVO
+- icon: fas fa-table
+  items:
+  - icon: fas fa-wind
+    tags:
+    - orchestration
+    - workflow
+    - etl
+    title: Airflow
+    url: http://airflow.127.0.0.1.traefik.me:9000
+  - icon: fas fa-cubes
+    tags:
+    - orchestration
+    - data
+    - pipelines
+    title: Dagster
+    url: http://dagster.127.0.0.1.traefik.me:9000
+  - icon: fas fa-table
+    tags:
+    - database
+    - spreadsheet
+    - airtable
+    title: NocoDB
+    url: http://nocodb.127.0.0.1.traefik.me:9000
+  name: DATA
 - icon: fas fa-external-link-alt
   items:
   - description: Digital Ocean Dashboard

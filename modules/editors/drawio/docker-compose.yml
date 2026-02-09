@@ -1,0 +1,16 @@
+services:
+  drawio:
+    image: jgraph/drawio:${DRAWIO_VERSION:-latest}
+    container_name: drawio-infra
+    restart: unless-stopped
+    networks:
+      - infra-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.drawio.rule=Host(`drawio.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.drawio.entrypoints=web"
+      - "traefik.http.services.drawio.loadbalancer.server.port=8080"
+
+networks:
+  infra-network:
+    external: true

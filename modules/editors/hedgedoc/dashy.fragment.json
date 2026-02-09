@@ -1,0 +1,8 @@
+{
+  "name": "HedgeDoc",
+  "icon": "fas fa-file-alt",
+  "url": "http://hedgedoc.127.0.0.1.traefik.me:9000",
+  "category": "EDITORS",
+  "description": "Collaborative Markdown editor",
+  "tags": ["markdown", "editor", "collaborative", "notes"]
+}

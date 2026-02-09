@@ -1,0 +1,8 @@
+{
+  "name": "Swagger Editor",
+  "icon": "fas fa-file-code",
+  "url": "http://swagger.127.0.0.1.traefik.me:9000",
+  "category": "EDITORS",
+  "description": "OpenAPI/Swagger Editor",
+  "tags": ["api", "swagger", "openapi", "editor"]
+}

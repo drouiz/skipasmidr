@@ -1,0 +1,39 @@
+# Kroki - Unified diagram rendering service
+# Supports: Mermaid, PlantUML, GraphViz, BlockDiag, BPMN, Excalidraw, and more
+services:
+  kroki:
+    image: yuzutech/kroki:${KROKI_VERSION:-latest}
+    container_name: kroki-infra
+    restart: unless-stopped
+    environment:
+      - KROKI_MERMAID_HOST=mermaid
+      - KROKI_BPMN_HOST=bpmn
+      - KROKI_EXCALIDRAW_HOST=excalidraw
+    depends_on:
+      - mermaid
+      - bpmn
+    networks:
+      - infra-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kroki.rule=Host(`kroki.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.kroki.entrypoints=web"
+      - "traefik.http.services.kroki.loadbalancer.server.port=8000"
+
+  mermaid:
+    image: yuzutech/kroki-mermaid:${KROKI_VERSION:-latest}
+    container_name: kroki-mermaid-infra
+    restart: unless-stopped
+    networks:
+      - infra-network
+
+  bpmn:
+    image: yuzutech/kroki-bpmn:${KROKI_VERSION:-latest}
+    container_name: kroki-bpmn-infra
+    restart: unless-stopped
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

@@ -1,0 +1,18 @@
+services:
+  swagger-editor:
+    image: swaggerapi/swagger-editor:${SWAGGER_EDITOR_VERSION:-latest}
+    container_name: swagger-editor-infra
+    restart: unless-stopped
+    environment:
+      - PORT=8080
+    networks:
+      - infra-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.swagger-editor.rule=Host(`swagger.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.swagger-editor.entrypoints=web"
+      - "traefik.http.services.swagger-editor.loadbalancer.server.port=8080"
+
+networks:
+  infra-network:
+    external: true

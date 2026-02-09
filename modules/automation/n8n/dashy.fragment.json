@@ -1,6 +1,7 @@
 {
   "name": "n8n",
   "icon": "fas fa-project-diagram",
+  "homepage_icon": "si-n8n",
   "url": "http://n8n.127.0.0.1.traefik.me:9000",
   "category": "AUTOMATION",
   "tags": ["workflow", "automation", "integration"]

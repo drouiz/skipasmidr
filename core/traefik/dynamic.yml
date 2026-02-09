@@ -35,6 +35,48 @@ http:
         - web
       service: homepage
 
+    # pgAdmin
+    pgadmin:
+      rule: "Host(`pgadmin.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: pgadmin
+
+    # Redis Commander
+    redis:
+      rule: "Host(`redis.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: redis
+
+    # Airflow
+    airflow:
+      rule: "Host(`airflow.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: airflow
+
+    # Dagster
+    dagster:
+      rule: "Host(`dagster.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: dagster
+
+    # Trino (SQL Query Engine)
+    trino:
+      rule: "Host(`trino.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: trino
+
+    # n8n (Workflow Automation)
+    n8n:
+      rule: "Host(`n8n.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: n8n
+
   services:
     dashy:
       loadBalancer:
@@ -55,3 +97,33 @@ http:
       loadBalancer:
         servers:
           - url: "http://homepage-infra:3000"
+
+    pgadmin:
+      loadBalancer:
+        servers:
+          - url: "http://pgadmin-infra:80"
+
+    redis:
+      loadBalancer:
+        servers:
+          - url: "http://redis-commander-infra:8081"
+
+    airflow:
+      loadBalancer:
+        servers:
+          - url: "http://airflow-infra:8080"
+
+    dagster:
+      loadBalancer:
+        servers:
+          - url: "http://dagster-infra:3000"
+
+    trino:
+      loadBalancer:
+        servers:
+          - url: "http://trino-infra:8080"
+
+    n8n:
+      loadBalancer:
+        servers:
+          - url: "http://n8n-infra:5678"

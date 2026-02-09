@@ -1,0 +1,27 @@
+services:
+  hedgedoc:
+    image: quay.io/hedgedoc/hedgedoc:${HEDGEDOC_VERSION:-latest}
+    container_name: hedgedoc-infra
+    restart: unless-stopped
+    environment:
+      - CMD_DB_URL=sqlite:///hedgedoc/db.sqlite
+      - CMD_DOMAIN=hedgedoc.127.0.0.1.traefik.me
+      - CMD_PORT=3000
+      - CMD_PROTOCOL_USESSL=false
+      - CMD_URL_ADDPORT=true
+      - CMD_ALLOW_ANONYMOUS=true
+      - CMD_ALLOW_ANONYMOUS_EDITS=true
+      - CMD_DEFAULT_PERMISSION=freely
+    volumes:
+      - ../../../../volumes/hedgedoc:/hedgedoc
+    networks:
+      - infra-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.hedgedoc.rule=Host(`hedgedoc.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.hedgedoc.entrypoints=web"
+      - "traefik.http.services.hedgedoc.loadbalancer.server.port=3000"
+
+networks:
+  infra-network:
+    external: true

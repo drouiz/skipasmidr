@@ -3,6 +3,7 @@ services:
     image: dagster/dagster-k8s:${DAGSTER_VERSION:-latest}
     container_name: dagster-infra
     restart: unless-stopped
+    working_dir: /opt/dagster/dagster_home
     entrypoint:
       - dagster-webserver
       - -h
@@ -10,15 +11,17 @@ services:
       - -p
       - "3000"
       - -w
-      - workspace.yaml
+      - /opt/dagster/dagster_home/workspace.yaml
     environment:
+      DAGSTER_HOME: /opt/dagster/dagster_home
       DAGSTER_POSTGRES_HOST: postgres-infra
       DAGSTER_POSTGRES_USER: ${POSTGRES_USER:-admin}
       DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
       DAGSTER_POSTGRES_DB: ${DAGSTER_DB:-dagster}
     volumes:
-      - ./workspace.yaml:/opt/dagster/app/workspace.yaml:ro
-      - dagster-data:/opt/dagster/dagster_home
+      - ./workspace.yaml:/opt/dagster/dagster_home/workspace.yaml:ro
+      - ./dagster.yaml:/opt/dagster/dagster_home/dagster.yaml:ro
+      - dagster-data:/opt/dagster/dagster_home/storage
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dagster.rule=Host(`dagster.127.0.0.1.traefik.me`)"
@@ -31,17 +34,20 @@ services:
     image: dagster/dagster-k8s:${DAGSTER_VERSION:-latest}
     container_name: dagster-daemon-infra
     restart: unless-stopped
+    working_dir: /opt/dagster/dagster_home
     entrypoint:
       - dagster-daemon
       - run
     environment:
+      DAGSTER_HOME: /opt/dagster/dagster_home
       DAGSTER_POSTGRES_HOST: postgres-infra
       DAGSTER_POSTGRES_USER: ${POSTGRES_USER:-admin}
       DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
       DAGSTER_POSTGRES_DB: ${DAGSTER_DB:-dagster}
     volumes:
-      - ./workspace.yaml:/opt/dagster/app/workspace.yaml:ro
-      - dagster-data:/opt/dagster/dagster_home
+      - ./workspace.yaml:/opt/dagster/dagster_home/workspace.yaml:ro
+      - ./dagster.yaml:/opt/dagster/dagster_home/dagster.yaml:ro
+      - dagster-data:/opt/dagster/dagster_home/storage
     networks:
       - infra-network
 

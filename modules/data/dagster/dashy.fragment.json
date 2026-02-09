@@ -1,6 +1,7 @@
 {
   "name": "Dagster",
   "icon": "fas fa-cubes",
+  "homepage_icon": "si-dagster",
   "url": "http://dagster.127.0.0.1.traefik.me:9000",
   "category": "DATA",
   "tags": ["orchestration", "data", "pipelines"]

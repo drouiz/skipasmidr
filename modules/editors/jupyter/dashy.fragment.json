@@ -1,0 +1,8 @@
+{
+  "name": "Jupyter",
+  "icon": "fas fa-book",
+  "url": "http://jupyter.127.0.0.1.traefik.me:9000",
+  "category": "EDITORS",
+  "description": "Jupyter Notebooks (Data Science)",
+  "tags": ["jupyter", "notebooks", "python", "data-science"]
+}

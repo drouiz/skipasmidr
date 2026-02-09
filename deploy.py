@@ -36,6 +36,11 @@ try:
 except ImportError:
     DashboardManager = None  # Fallback if libs not available
 
+try:
+    from libs.testing import E2ETest
+except ImportError:
+    E2ETest = None  # Fallback if libs not available
+
 # Configure loguru
 logger.remove()
 logger.add(
@@ -319,6 +324,18 @@ def merge_compose_files(service_paths: List[Path]) -> dict:
                             resolved_volumes.append(vol)
                     svc_config["volumes"] = resolved_volumes
 
+                # Resolve build context paths to absolute
+                if "build" in svc_config:
+                    build_config = svc_config["build"]
+                    if isinstance(build_config, str):
+                        # Simple string format: build: ./path
+                        svc_config["build"] = str((path / build_config).resolve())
+                    elif isinstance(build_config, dict):
+                        # Dict format: build: {context: ./path, dockerfile: Dockerfile}
+                        if "context" in build_config:
+                            context = build_config["context"]
+                            build_config["context"] = str((path / context).resolve())
+
                 merged["services"][svc_name] = svc_config
 
         # Merge volumes
@@ -392,7 +409,7 @@ def docker_compose_unified(action: str, compose_file: Path = None) -> bool:
         cmd.extend(["--env-file", str(env_file)])
 
     if action == "up":
-        cmd.extend(["up", "-d", "--remove-orphans"])
+        cmd.extend(["up", "-d", "--remove-orphans", "--build"])
     elif action == "down":
         cmd.extend(["down", "--remove-orphans"])
     elif action == "restart":
@@ -437,10 +454,11 @@ def regenerate_dashy(active_services: List[str], all_services: dict, include_cor
     services_to_show = set(core_names + active_services)
 
     # Filter fragments to only show active services
+    # service_path.name is the service directory name (e.g., "airflow", "postgres")
     manager.fragments = [
         f for f in manager.fragments
         if f.service_path and (
-            f.service_path.parent.name in services_to_show or
+            f.service_path.name in services_to_show or
             f.category.upper() == "CORE"
         )
     ]
@@ -522,10 +540,11 @@ def regenerate_homepage(active_services: List[str], all_services: dict, include_
     services_to_show = set(core_names + active_services)
 
     # Filter fragments to only show active services
+    # service_path.name is the service directory name (e.g., "airflow", "postgres")
     manager.fragments = [
         f for f in manager.fragments
         if f.service_path and (
-            f.service_path.parent.name in services_to_show or
+            f.service_path.name in services_to_show or
             f.category.upper() == "CORE"
         )
     ]
@@ -809,29 +828,33 @@ def cmd_add(args):
     core_services = set(services["core"].keys())
     all_services_set.update(core_services)
 
+    # Update state FIRST (before docker compose, so it's saved even if compose hangs)
+    current.update(new_to_add)
+    state["active"] = list(current)
+    save_state(state)
+    logger.info("State saved")
+
     # Generate unified compose
     generate_env_file()
     compose_file = generate_unified_compose(all_services_set, services)
 
-    # Execute
+    # Execute docker compose
+    logger.info("Starting containers...")
     if docker_compose_unified("up", compose_file):
         logger.success("Services added")
     else:
-        logger.error("Error adding services")
-        return
+        logger.warning("Docker compose had issues, but state is saved")
 
-    # Update state
-    current.update(new_to_add)
-    state["active"] = list(current)
-    save_state(state)
-
-    # Regenerate dashboards
+    # Regenerate dashboards (always, even if compose had issues)
+    logger.info("Updating dashboards...")
     regenerate_all_dashboards(state["active"], services)
 
     # New URLs
     logger.info("New URLs:")
     for name in sorted(new_to_add):
         logger.info(f"  - http://{name}.127.0.0.1.traefik.me:9000")
+
+    logger.success("Done")
 
 
 def cmd_down(args):
@@ -1077,6 +1100,39 @@ def cmd_clean(args):
     logger.success("Cleanup completed")
 
 
+def cmd_test(args):
+    """Run E2E tests on services."""
+    if E2ETest is None:
+        logger.error("E2ETest not available. Check libs/testing module.")
+        return
+
+    # Load active services from state
+    state = load_state()
+    active_services = state.get("active", [])
+
+    tester = E2ETest()
+
+    if args.category == "core":
+        report = tester.test_core()
+    elif args.category == "infra":
+        report = tester.test_infra()
+    elif args.category == "data":
+        report = tester.test_data()
+    elif args.category == "fragments":
+        # Test all services from fragment files
+        report = tester.test_from_fragments(BASE_DIR)
+    else:
+        # Test all - pass active services to filter tests
+        report = tester.test_all(active_services=active_services)
+
+    # Exit with error if tests failed
+    if report.failed > 0:
+        logger.error(f"{report.failed} tests failed")
+        sys.exit(1)
+    else:
+        logger.success("All tests passed")
+
+
 # ============================================================================
 # MAIN
 # ============================================================================
@@ -1096,6 +1152,8 @@ Examples:
   python deploy.py status               # Show status
   python deploy.py running              # Show running services only
   python deploy.py list                 # List services
+  python deploy.py test                 # Run all E2E tests
+  python deploy.py test core            # Test core services only
 """
     )
 
@@ -1160,6 +1218,12 @@ Examples:
     # clean
     clean_parser = subparsers.add_parser("clean", help="Clean all")
     clean_parser.set_defaults(func=cmd_clean)
+
+    # test
+    test_parser = subparsers.add_parser("test", help="Run E2E tests")
+    test_parser.add_argument("category", nargs="?", choices=["core", "infra", "data", "fragments", "all"],
+                             default="all", help="Test category (default: all)")
+    test_parser.set_defaults(func=cmd_test)
 
     args = parser.parse_args()
 
