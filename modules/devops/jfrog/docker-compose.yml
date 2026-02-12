@@ -1,0 +1,28 @@
+# JFrog Artifactory OSS (Open Source)
+services:
+  jfrog:
+    image: releases-docker.jfrog.io/jfrog/artifactory-oss:${JFROG_VERSION:-latest}
+    container_name: jfrog-infra
+    restart: unless-stopped
+    environment:
+      - JF_SHARED_DATABASE_TYPE=postgresql
+      - JF_SHARED_DATABASE_DRIVER=org.postgresql.Driver
+      - JF_SHARED_DATABASE_URL=jdbc:postgresql://postgres-infra:5432/${JFROG_DB:-artifactory}
+      - JF_SHARED_DATABASE_USERNAME=${POSTGRES_USER:-admin}
+      - JF_SHARED_DATABASE_PASSWORD=${POSTGRES_PASSWORD:-admin123}
+    volumes:
+      - jfrog-data:/var/opt/jfrog/artifactory
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jfrog.rule=Host(`jfrog.127.0.0.1.traefik.me`) || Host(`artifactory.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.jfrog.entrypoints=web"
+      - "traefik.http.services.jfrog.loadbalancer.server.port=8082"
+    networks:
+      - infra-network
+
+volumes:
+  jfrog-data:
+
+networks:
+  infra-network:
+    external: true

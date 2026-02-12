@@ -1,0 +1,16 @@
+services:
+  jsoncrack:
+    image: ahbbcc/jsoncrack:${JSONCRACK_VERSION:-latest}
+    container_name: jsoncrack-infra
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jsoncrack.rule=Host(`jsoncrack.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.jsoncrack.entrypoints=web"
+      - "traefik.http.services.jsoncrack.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

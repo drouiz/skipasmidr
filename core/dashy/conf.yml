@@ -43,97 +43,64 @@ sections:
     title: Traefik
     url: http://traefik.127.0.0.1.traefik.me:9000
   name: CORE
-- icon: fas fa-server
+- icon: fas fa-cube
   items:
-  - icon: fas fa-database
+  - description: Diagram editor
+    icon: fas fa-project-diagram
     tags:
-    - database
-    - mysql
-    - mariadb
-    - admin
-    title: phpMyAdmin
-    url: http://phpmyadmin.127.0.0.1.traefik.me:9000
-  - icon: fas fa-database
+    - diagrams
+    - flowchart
+    - uml
+    - editor
+    title: Draw.io
+    url: http://drawio.127.0.0.1.traefik.me:9000
+  - description: Whiteboard drawing tool
+    icon: fas fa-paint-brush
     tags:
-    - database
-    - postgresql
-    - admin
-    title: pgAdmin
-    url: http://pgadmin.127.0.0.1.traefik.me:9000
-  - icon: fas fa-bolt
+    - drawing
+    - whiteboard
+    - diagrams
+    - sketch
+    title: Excalidraw
+    url: http://excalidraw.127.0.0.1.traefik.me:9000
+  - description: Collaborative Markdown editor
+    icon: fas fa-file-alt
     tags:
-    - cache
-    - redis
-    - key-value
-    - admin
-    title: Redis Commander
-    url: http://redis.127.0.0.1.traefik.me:9000
-  name: INFRA
-- icon: fas fa-robot
+    - markdown
+    - editor
+    - collaborative
+    - notes
+    title: HedgeDoc
+    url: http://hedgedoc.127.0.0.1.traefik.me:9000
+  - description: Diagrams as code (Mermaid, PlantUML, GraphViz...)
+    icon: fas fa-sitemap
+    tags:
+    - diagrams
+    - mermaid
+    - plantuml
+    - graphviz
+    title: Kroki
+    url: http://kroki.127.0.0.1.traefik.me:9000
+  - description: OpenAPI/Swagger Editor
+    icon: fas fa-file-code
+    tags:
+    - api
+    - swagger
+    - openapi
+    - editor
+    title: Swagger Editor
+    url: http://swagger.127.0.0.1.traefik.me:9000
+  name: EDITORS
+- icon: fas fa-at
   items:
-  - icon: fas fa-project-diagram
+  - icon: fas fa-envelope
     tags:
-    - workflow
-    - automation
-    - integration
-    title: n8n
-    url: http://n8n.127.0.0.1.traefik.me:9000
-  name: AUTOMATION
-- icon: fas fa-building
-  items:
-  - icon: fas fa-briefcase
-    tags:
-    - erp
-    - crm
-    - invoicing
-    title: Dolibarr
-    url: http://dolibarr.127.0.0.1.traefik.me:9000
-  - icon: fas fa-bullhorn
-    tags:
-    - marketing
-    - automation
     - email
-    title: Mautic
-    url: http://mautic.127.0.0.1.traefik.me:9000
-  - icon: fas fa-building
-    tags:
-    - erp
-    - crm
-    - business
-    title: Odoo
-    url: http://odoo.127.0.0.1.traefik.me:9000
-  - icon: fas fa-tasks
-    tags:
-    - project-management
-    - agile
-    - gantt
-    title: OpenProject
-    url: http://openproject.127.0.0.1.traefik.me:9000
-  name: CORPORATIVO
-- icon: fas fa-table
-  items:
-  - icon: fas fa-wind
-    tags:
-    - orchestration
-    - workflow
-    - etl
-    title: Airflow
-    url: http://airflow.127.0.0.1.traefik.me:9000
-  - icon: fas fa-cubes
-    tags:
-    - orchestration
-    - data
-    - pipelines
-    title: Dagster
-    url: http://dagster.127.0.0.1.traefik.me:9000
-  - icon: fas fa-table
-    tags:
-    - database
-    - spreadsheet
-    - airtable
-    title: NocoDB
-    url: http://nocodb.127.0.0.1.traefik.me:9000
-  name: DATA
+    - smtp
+    - webmail
+    title: Mailu
+    url: http://mail.127.0.0.1.traefik.me:9000
+  name: EMAIL
 - icon: fas fa-external-link-alt
   items:
   - description: Digital Ocean Dashboard
@@ -165,3 +132,14 @@ sections:
     title: Beserker Zen
     url: https://beserkerzen.com
   name: EXTERNAL
+- icon: fas fa-microchip
+  items:
+  - icon: fas fa-video
+    tags:
+    - nvr
+    - camera
+    - ai
+    - detection
+    title: Frigate
+    url: http://frigate.127.0.0.1.traefik.me:9000
+  name: IOT

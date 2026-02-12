@@ -10,8 +10,12 @@ services:
       - NB_UID=1000
       - NB_GID=1000
       - JUPYTER_TOKEN=${JUPYTER_TOKEN:-admin123}
+      - PYTHONPATH=/home/jovyan/code/libs
     volumes:
-      - ../../../../volumes/jupyter:/home/jovyan/work
+      # Shared code workspace (bind mount to local folder)
+      - ../../../code:/home/jovyan/code
+      # Shared diagrams workspace
+      - ../../../diagrams:/home/jovyan/diagrams
     networks:
       - infra-network
     labels:

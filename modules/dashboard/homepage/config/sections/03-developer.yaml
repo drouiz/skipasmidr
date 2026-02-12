@@ -1,0 +1,17 @@
+- DEVELOPER:
+  - Code Server:
+      href: http://code.127.0.0.1.traefik.me:9000
+      icon: si-visualstudiocode
+      description: VS Code in Browser
+  - Jupyter:
+      href: http://jupyter.127.0.0.1.traefik.me:9000
+      icon: si-jupyter
+      description: Notebooks
+  - Hoppscotch:
+      href: http://hoppscotch.127.0.0.1.traefik.me:9000
+      icon: mdi-api
+      description: API Testing
+  - Lighthouse CI:
+      href: http://lhci.127.0.0.1.traefik.me:9000
+      icon: mdi-lighthouse
+      description: Performance Testing

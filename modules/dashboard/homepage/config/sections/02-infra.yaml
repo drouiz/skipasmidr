@@ -1,0 +1,16 @@
+- INFRA:
+  - Docker Registry:
+      href: http://registry.127.0.0.1.traefik.me:9000
+      icon: si-docker
+  - pgAdmin:
+      href: http://pgadmin.127.0.0.1.traefik.me:9000
+      icon: si-postgresql
+      description: PostgreSQL Admin
+  - phpMyAdmin:
+      href: http://phpmyadmin.127.0.0.1.traefik.me:9000
+      icon: mdi-database
+      description: MariaDB Admin
+  - Redis Commander:
+      href: http://redis.127.0.0.1.traefik.me:9000
+      icon: si-redis
+      description: Redis Admin

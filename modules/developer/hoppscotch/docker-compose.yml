@@ -4,11 +4,26 @@ services:
     container_name: hoppscotch-infra
     restart: unless-stopped
     environment:
+      # Database
       - DATABASE_URL=postgresql://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${HOPPSCOTCH_DB:-hoppscotch}
+      # Auth - using email only for simplicity
       - VITE_ALLOWED_AUTH_PROVIDERS=EMAIL
+      - MAILER_SMTP_ENABLE=false
+      # URLs
+      - VITE_BASE_URL=http://hoppscotch.127.0.0.1.traefik.me:9000
+      - VITE_SHORTCODE_BASE_URL=http://hoppscotch.127.0.0.1.traefik.me:9000
+      - VITE_ADMIN_URL=http://hoppscotch.127.0.0.1.traefik.me:9000/admin
+      - VITE_BACKEND_GQL_URL=http://hoppscotch.127.0.0.1.traefik.me:9000/graphql
+      - VITE_BACKEND_WS_URL=ws://hoppscotch.127.0.0.1.traefik.me:9000/graphql
+      - VITE_BACKEND_API_URL=http://hoppscotch.127.0.0.1.traefik.me:9000/v1
+      # Secrets
+      - JWT_SECRET=${JWT_SECRET:-hoppscotch-jwt-secret-change-me}
+      - SESSION_SECRET=${SESSION_SECRET:-hoppscotch-session-secret-change-me}
+      - DATA_ENCRYPTION_KEY=${DATA_ENCRYPTION_KEY:-hoppscotch-data-key-32chars!}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.hoppscotch.rule=Host(`hoppscotch.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.hoppscotch.entrypoints=web"
       - "traefik.http.services.hoppscotch.loadbalancer.server.port=3000"
     networks:
       - infra-network

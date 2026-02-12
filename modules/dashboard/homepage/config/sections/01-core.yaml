@@ -1,0 +1,18 @@
+- CORE:
+  - Dashy:
+      href: http://dashy.127.0.0.1.traefik.me:9000
+      icon: mdi-view-dashboard
+  - Heimdall:
+      href: http://heimdall.127.0.0.1.traefik.me:9000
+      icon: mdi-home
+      description: Application Dashboard
+  - Homepage:
+      href: http://homepage.127.0.0.1.traefik.me:9000
+      icon: mdi-home
+  - Portainer:
+      href: http://portainer.127.0.0.1.traefik.me:9000
+      icon: si-portainer
+  - Traefik:
+      href: http://traefik.127.0.0.1.traefik.me:9000
+      icon: si-traefikproxy
+      description: Reverse Proxy Dashboard

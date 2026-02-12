@@ -1,0 +1,9 @@
+- DOCUMENTS:
+  - Paperless-ngx:
+      href: http://paperless.127.0.0.1.traefik.me:9000
+      icon: mdi-file-document
+      description: Document Management
+  - Tandoor:
+      href: http://tandoor.127.0.0.1.traefik.me:9000
+      icon: mdi-silverware-fork-knife
+      description: Recipe Manager

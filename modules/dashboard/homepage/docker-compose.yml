@@ -6,6 +6,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
+      - HOMEPAGE_ALLOWED_HOSTS=homepage.127.0.0.1.traefik.me:9000,localhost:3000
     volumes:
       - ../../../volumes/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro

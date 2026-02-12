@@ -30,8 +30,10 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${AIRFLOW_DB:-airflow}
       - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_SECRET:-your-secret-key}
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/code/dags
+      - PYTHONPATH=/opt/airflow/code/libs
     volumes:
-      - ./dags:/opt/airflow/dags
+      - ../../../code:/opt/airflow/code:ro
       - airflow-logs:/opt/airflow/logs
     labels:
       - "traefik.enable=true"
@@ -51,8 +53,10 @@ services:
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${AIRFLOW_DB:-airflow}
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/code/dags
+      - PYTHONPATH=/opt/airflow/code/libs
     volumes:
-      - ./dags:/opt/airflow/dags
+      - ../../../code:/opt/airflow/code:ro
       - airflow-logs:/opt/airflow/logs
     command: scheduler
     networks:

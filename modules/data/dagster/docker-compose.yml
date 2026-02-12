@@ -18,10 +18,12 @@ services:
       DAGSTER_POSTGRES_USER: ${POSTGRES_USER:-admin}
       DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
       DAGSTER_POSTGRES_DB: ${DAGSTER_DB:-dagster}
+      PYTHONPATH: /opt/dagster/code/libs
     volumes:
       - ./workspace.yaml:/opt/dagster/dagster_home/workspace.yaml:ro
       - ./dagster.yaml:/opt/dagster/dagster_home/dagster.yaml:ro
       - dagster-data:/opt/dagster/dagster_home/storage
+      - ../../../code:/opt/dagster/code:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dagster.rule=Host(`dagster.127.0.0.1.traefik.me`)"
@@ -44,10 +46,12 @@ services:
       DAGSTER_POSTGRES_USER: ${POSTGRES_USER:-admin}
       DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
       DAGSTER_POSTGRES_DB: ${DAGSTER_DB:-dagster}
+      PYTHONPATH: /opt/dagster/code/libs
     volumes:
       - ./workspace.yaml:/opt/dagster/dagster_home/workspace.yaml:ro
       - ./dagster.yaml:/opt/dagster/dagster_home/dagster.yaml:ro
       - dagster-data:/opt/dagster/dagster_home/storage
+      - ../../../code:/opt/dagster/code:ro
     networks:
       - infra-network
 

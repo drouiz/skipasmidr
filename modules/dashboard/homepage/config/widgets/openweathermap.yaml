@@ -1,0 +1,9 @@
+# OpenWeatherMap - Requires free API key from https://openweathermap.org/api
+# Uncomment and add your API key to enable
+#- openweathermap:
+#    label: Weather
+#    latitude: 41.3851
+#    longitude: 2.1734
+#    units: metric
+#    apiKey: YOUR_OPENWEATHERMAP_API_KEY
+#    cache: 15

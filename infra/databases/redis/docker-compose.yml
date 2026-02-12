@@ -10,11 +10,12 @@ services:
       - "${EXPOSE_REDIS_PORT:-127.0.0.1:6379}:6379"
     networks:
       - infra-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-admin123}", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # Healthcheck disabled - WSL2/Docker Desktop exec bug
+    # healthcheck:
+    #   test: ["CMD", "redis-cli", "-a", "admin123", "ping"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
 
   redis-commander:
     image: rediscommander/redis-commander:latest
@@ -29,8 +30,7 @@ services:
     networks:
       - infra-network
     depends_on:
-      redis:
-        condition: service_healthy
+      - redis
 
 volumes:
   redis-data:

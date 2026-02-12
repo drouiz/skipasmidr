@@ -1,3 +1,7 @@
+# Nexus Repository Manager
+# Default credentials: admin / (check admin.password file or use script below)
+# After first login, you'll be forced to change the password
+
 services:
   nexus:
     image: sonatype/nexus3:${NEXUS_VERSION:-latest}
@@ -5,8 +9,9 @@ services:
     restart: unless-stopped
     environment:
       - INSTALL4J_ADD_VM_PARAMS=-Xms512m -Xmx2g -XX:MaxDirectMemorySize=2g
+      - NEXUS_SECURITY_RANDOMPASSWORD=false
     volumes:
-      - ../../../volumes/nexus:/nexus-data
+      - nexus-data:/nexus-data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nexus.rule=Host(`nexus.127.0.0.1.traefik.me`)"
@@ -14,6 +19,15 @@ services:
       - "traefik.http.services.nexus.loadbalancer.server.port=8081"
     networks:
       - infra-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/service/rest/v1/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+volumes:
+  nexus-data:
 
 networks:
   infra-network:

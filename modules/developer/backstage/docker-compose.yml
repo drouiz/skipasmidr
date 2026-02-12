@@ -1,19 +1,13 @@
-services:
-  backstage:
-    image: spotify/backstage-cookiecutter:${BACKSTAGE_VERSION:-latest}
-    container_name: backstage-infra
-    restart: unless-stopped
-    environment:
-      - POSTGRES_HOST=postgres-infra
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=${POSTGRES_USER:-admin}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-admin123}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backstage.rule=Host(`backstage.127.0.0.1.traefik.me`)"
-      - "traefik.http.services.backstage.loadbalancer.server.port=7007"
-    networks:
-      - infra-network
+# NOTE: Backstage requires a custom build - the cookiecutter image is just a template generator
+# To use Backstage, you need to:
+# 1. Run: npx @backstage/create-app
+# 2. Build your custom Docker image
+# 3. Update this file with your custom image
+#
+# For now, this service is disabled.
+
+# Placeholder service to keep valid docker-compose
+services: {}
 
 networks:
   infra-network:

@@ -1,6 +1,7 @@
 {
   "name": "OpenProject",
   "icon": "fas fa-tasks",
+  "homepage_icon": "mdi-clipboard-check-multiple",
   "url": "http://openproject.127.0.0.1.traefik.me:9000",
   "category": "CORPORATIVO",
   "tags": ["project-management", "agile", "gantt"]

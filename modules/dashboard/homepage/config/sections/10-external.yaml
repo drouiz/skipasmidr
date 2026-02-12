@@ -1,0 +1,29 @@
+- EXTERNAL:
+  - Digital Ocean:
+      href: https://cloud.digitalocean.com
+      icon: si-digitalocean
+      description: Digital Ocean Dashboard
+  - GitHub:
+      href: https://github.com/drouiz
+      icon: si-github
+      description: My GitHub Profile
+  - GitLab:
+      href: https://gitlab.com
+      icon: si-gitlab
+      description: GitLab repositories
+  - Gmail:
+      href: https://mail.google.com
+      icon: si-gmail
+      description: Google Mail
+  - drouiz.com:
+      href: https://drouiz.com
+      icon: mdi-web
+      description: Personal website
+  - Elegant Maker:
+      href: https://elegant_maker.com
+      icon: mdi-palette
+      description: Elegant Maker website
+  - Beserker Zen:
+      href: https://beserkerzen.com
+      icon: mdi-yin-yang
+      description: Beserker Zen website

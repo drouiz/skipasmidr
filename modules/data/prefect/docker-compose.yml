@@ -7,14 +7,31 @@ services:
     environment:
       PREFECT_SERVER_API_HOST: 0.0.0.0
       PREFECT_API_DATABASE_CONNECTION_URL: postgresql+asyncpg://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${PREFECT_DB:-prefect}
+      PYTHONPATH: /opt/prefect/code/libs
     volumes:
       - prefect-data:/root/.prefect
+      - ../../../code:/opt/prefect/code:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prefect.rule=Host(`prefect.127.0.0.1.traefik.me`)"
       - "traefik.http.services.prefect.loadbalancer.server.port=4200"
     networks:
       - infra-network
+
+  prefect-worker:
+    image: prefecthq/prefect:${PREFECT_VERSION:-2-latest}
+    container_name: prefect-worker-infra
+    restart: unless-stopped
+    command: prefect worker start -p default-pool
+    environment:
+      PREFECT_API_URL: http://prefect-infra:4200/api
+      PYTHONPATH: /opt/prefect/code/libs
+    volumes:
+      - ../../../code:/opt/prefect/code
+    networks:
+      - infra-network
+    depends_on:
+      - prefect-server
 
 volumes:
   prefect-data:

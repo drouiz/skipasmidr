@@ -1,0 +1,26 @@
+services:
+  headlamp:
+    image: ghcr.io/headlamp-k8s/headlamp:${HEADLAMP_VERSION:-latest}
+    container_name: headlamp-infra
+    restart: unless-stopped
+    environment:
+      # For external cluster management, mount your kubeconfig
+      - HEADLAMP_CONFIG_PLUGINS_DIR=/headlamp/plugins
+    volumes:
+      # Mount your kubeconfig for external cluster access
+      - ../../../volumes/headlamp/kubeconfig:/root/.kube/config:ro
+      - headlamp-plugins:/headlamp/plugins
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.headlamp.rule=Host(`headlamp.127.0.0.1.traefik.me`) || Host(`k8s.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.headlamp.entrypoints=web"
+      - "traefik.http.services.headlamp.loadbalancer.server.port=4466"
+    networks:
+      - infra-network
+
+volumes:
+  headlamp-plugins:
+
+networks:
+  infra-network:
+    external: true

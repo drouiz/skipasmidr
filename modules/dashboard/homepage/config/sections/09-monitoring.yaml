@@ -1,0 +1,5 @@
+- MONITORING:
+  - Grafana:
+      href: http://grafana.127.0.0.1.traefik.me:9000
+      icon: si-grafana
+      description: Dashboards

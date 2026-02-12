@@ -1,0 +1,33 @@
+- DEVOPS:
+  - ArgoCD:
+      href: http://argocd.127.0.0.1.traefik.me:9000
+      icon: si-argo
+      description: GitOps CD
+  - GitLab:
+      href: http://gitlab.127.0.0.1.traefik.me:9000
+      icon: si-gitlab
+      description: Git Server
+  - SonarQube:
+      href: http://sonarqube.127.0.0.1.traefik.me:9000
+      icon: si-sonarqube
+      description: Code Quality
+  - Nexus:
+      href: http://nexus.127.0.0.1.traefik.me:9000
+      icon: mdi-package-variant
+      description: Artifact Repository
+  - JFrog:
+      href: http://jfrog.127.0.0.1.traefik.me:9000
+      icon: si-jfrog
+      description: Artifactory OSS
+  - Harbor:
+      href: http://harbor.127.0.0.1.traefik.me:9000
+      icon: mdi-ferry
+      description: Container Registry
+  - Headlamp:
+      href: http://headlamp.127.0.0.1.traefik.me:9000
+      icon: si-kubernetes
+      description: Kubernetes Dashboard
+  - Watchtower:
+      href: '#'
+      icon: mdi-update
+      description: Auto-Update (no UI)

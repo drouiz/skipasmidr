@@ -1,0 +1,8 @@
+# Open-Meteo - Free weather API, no API key needed
+- openmeteo:
+    label: Weather
+    latitude: 41.3851
+    longitude: 2.1734
+    timezone: Europe/Madrid
+    units: metric
+    cache: 15

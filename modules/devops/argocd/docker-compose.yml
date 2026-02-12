@@ -1,0 +1,19 @@
+services:
+  argocd:
+    image: quay.io/argoproj/argocd:${ARGOCD_VERSION:-latest}
+    container_name: argocd-infra
+    restart: unless-stopped
+    command: argocd-server --insecure --rootpath /
+    environment:
+      - ARGOCD_SERVER_INSECURE=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.argocd.rule=Host(`argocd.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.argocd.entrypoints=web"
+      - "traefik.http.services.argocd.loadbalancer.server.port=8080"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

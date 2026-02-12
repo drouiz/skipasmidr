@@ -1,0 +1,35 @@
+title: Dev Infrastructure
+theme: dark
+color: slate
+headerStyle: clean
+layout:
+  CORE:
+    style: row
+    columns: 5
+  INFRA:
+    style: row
+    columns: 4
+  DEVELOPER:
+    style: row
+    columns: 5
+  DEVOPS:
+    style: row
+    columns: 3
+  DATA:
+    style: row
+    columns: 3
+  CORPORATIVO:
+    style: row
+    columns: 3
+  EDITORS:
+    style: row
+    columns: 4
+  DOCUMENTS:
+    style: row
+    columns: 2
+  MONITORING:
+    style: row
+    columns: 3
+  EXTERNAL:
+    style: row
+    columns: 4

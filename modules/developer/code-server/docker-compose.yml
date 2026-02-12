@@ -3,11 +3,22 @@ services:
     image: codercom/code-server:${CODESERVER_VERSION:-latest}
     container_name: code-server-infra
     restart: unless-stopped
+    user: "0:0"  # Run as root to fix permissions, then drops to coder
     environment:
       - PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - DOCKER_USER=coder
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        chown -R coder:coder /home/coder/.config /home/coder/diagrams
+        exec su coder -c "/usr/bin/entrypoint.sh --bind-addr 0.0.0.0:8080 /home/coder/code"
     volumes:
-      - code-server-data:/home/coder
       - code-server-config:/home/coder/.config
+      # Shared code workspace (bind mount to local folder)
+      - ../../../code:/home/coder/code
+      # Shared diagrams workspace
+      - ../../../diagrams:/home/coder/diagrams
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.code-server.rule=Host(`code.127.0.0.1.traefik.me`)"
@@ -17,7 +28,6 @@ services:
       - infra-network
 
 volumes:
-  code-server-data:
   code-server-config:
 
 networks:

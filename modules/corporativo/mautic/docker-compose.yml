@@ -4,10 +4,17 @@ services:
     container_name: mautic-infra
     restart: unless-stopped
     environment:
-      - MAUTIC_DB_HOST=mariadb
+      # Database
+      - MAUTIC_DB_HOST=mariadb-infra
       - MAUTIC_DB_USER=${MYSQL_USER:-admin}
       - MAUTIC_DB_PASSWORD=${MYSQL_PASSWORD:-admin123}
       - MAUTIC_DB_NAME=${MAUTIC_DB:-mautic}
+      # Admin user (auto-created on first install)
+      - MAUTIC_ADMIN_USERNAME=${ADMIN_USER:-admin}
+      - MAUTIC_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - MAUTIC_ADMIN_EMAIL=${ADMIN_EMAIL:-admin@localhost}
+      # Site config
+      - MAUTIC_URL=http://mautic.127.0.0.1.traefik.me:9000
       - MAUTIC_RUN_CRON_JOBS=true
     volumes:
       - mautic-data:/var/www/html

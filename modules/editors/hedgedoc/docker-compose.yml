@@ -4,7 +4,7 @@ services:
     container_name: hedgedoc-infra
     restart: unless-stopped
     environment:
-      - CMD_DB_URL=sqlite:///hedgedoc/db.sqlite
+      - CMD_DB_URL=sqlite:///hedgedoc/public/uploads/hedgedoc.sqlite
       - CMD_DOMAIN=hedgedoc.127.0.0.1.traefik.me
       - CMD_PORT=3000
       - CMD_PROTOCOL_USESSL=false
@@ -13,7 +13,7 @@ services:
       - CMD_ALLOW_ANONYMOUS_EDITS=true
       - CMD_DEFAULT_PERMISSION=freely
     volumes:
-      - ../../../../volumes/hedgedoc:/hedgedoc
+      - hedgedoc-uploads:/hedgedoc/public/uploads
     networks:
       - infra-network
     labels:
@@ -21,6 +21,9 @@ services:
       - "traefik.http.routers.hedgedoc.rule=Host(`hedgedoc.127.0.0.1.traefik.me`)"
       - "traefik.http.routers.hedgedoc.entrypoints=web"
       - "traefik.http.services.hedgedoc.loadbalancer.server.port=3000"
+
+volumes:
+  hedgedoc-uploads:
 
 networks:
   infra-network:

@@ -1,0 +1,194 @@
+- CORE:
+  - Dashy:
+      href: http://dashy.127.0.0.1.traefik.me:9000
+      icon: mdi-view-dashboard
+  - Heimdall:
+      href: http://heimdall.127.0.0.1.traefik.me:9000
+      icon: mdi-home
+      description: Application Dashboard
+  - Homepage:
+      href: http://homepage.127.0.0.1.traefik.me:9000
+      icon: mdi-home
+  - Portainer:
+      href: http://portainer.127.0.0.1.traefik.me:9000
+      icon: si-portainer
+  - Traefik:
+      href: http://traefik.127.0.0.1.traefik.me:9000
+      icon: si-traefikproxy
+
+- INFRA:
+  - Docker Registry:
+      href: http://registry.127.0.0.1.traefik.me:9000
+      icon: si-docker
+  - pgAdmin:
+      href: http://pgadmin.127.0.0.1.traefik.me:9000
+      icon: si-postgresql
+      description: PostgreSQL Admin
+  - phpMyAdmin:
+      href: http://phpmyadmin.127.0.0.1.traefik.me:9000
+      icon: mdi-database
+      description: MariaDB Admin
+  - Redis Commander:
+      href: http://redis.127.0.0.1.traefik.me:9000
+      icon: si-redis
+      description: Redis Admin
+
+- DEVELOPER:
+  - Code Server:
+      href: http://code.127.0.0.1.traefik.me:9000
+      icon: si-visualstudiocode
+      description: VS Code in Browser
+  - Jupyter:
+      href: http://jupyter.127.0.0.1.traefik.me:9000
+      icon: si-jupyter
+      description: Notebooks
+  - Hoppscotch:
+      href: http://hoppscotch.127.0.0.1.traefik.me:9000
+      icon: mdi-api
+      description: API Testing
+  - Lighthouse CI:
+      href: http://lhci.127.0.0.1.traefik.me:9000
+      icon: mdi-lighthouse
+      description: Performance Testing
+  - Swagger Editor:
+      href: http://swagger.127.0.0.1.traefik.me:9000
+      icon: si-swagger
+      description: API Documentation
+
+- DEVOPS:
+  - Nexus:
+      href: http://nexus.127.0.0.1.traefik.me:9000
+      icon: mdi-package-variant
+      description: Artifact Repository
+  - Harbor:
+      href: http://harbor.127.0.0.1.traefik.me:9000
+      icon: si-harbor
+      description: Container Registry
+  - Headlamp:
+      href: http://headlamp.127.0.0.1.traefik.me:9000
+      icon: si-kubernetes
+      description: Kubernetes Dashboard
+  - Watchtower:
+      href: '#'
+      icon: mdi-update
+      description: Container Auto-Update (no UI)
+  - Rclone:
+      href: '#'
+      icon: mdi-cloud-sync
+      description: Cloud Sync (no UI)
+  - Restic:
+      href: '#'
+      icon: mdi-backup-restore
+      description: Backup (no UI)
+
+- DATA:
+  - Airflow:
+      href: http://airflow.127.0.0.1.traefik.me:9000
+      icon: si-apacheairflow
+      description: Workflow Orchestration
+  - Dagster:
+      href: http://dagster.127.0.0.1.traefik.me:9000
+      icon: mdi-pipe
+      description: Data Orchestration
+  - Prefect:
+      href: http://prefect.127.0.0.1.traefik.me:9000
+      icon: mdi-wave
+      description: Workflow Orchestration
+  - Superset:
+      href: http://superset.127.0.0.1.traefik.me:9000
+      icon: si-apachesuperset
+      description: Data Visualization
+  - Trino:
+      href: http://trino.127.0.0.1.traefik.me:9000
+      icon: si-trino
+      description: SQL Query Engine
+  - NocoDB:
+      href: http://nocodb.127.0.0.1.traefik.me:9000
+      icon: mdi-table
+      description: Airtable Alternative
+
+- CORPORATIVO:
+  - Odoo:
+      href: http://odoo.127.0.0.1.traefik.me:9000
+      icon: mdi-office-building
+      description: ERP
+  - Dolibarr:
+      href: http://dolibarr.127.0.0.1.traefik.me:9000
+      icon: mdi-briefcase
+      description: ERP/CRM
+  - OpenProject:
+      href: http://openproject.127.0.0.1.traefik.me:9000
+      icon: mdi-clipboard-check
+      description: Project Management
+  - Mautic:
+      href: http://mautic.127.0.0.1.traefik.me:9000
+      icon: mdi-email-marketing
+      description: Marketing Automation
+  - SuiteCRM:
+      href: http://suitecrm.127.0.0.1.traefik.me:9000
+      icon: mdi-contacts
+      description: CRM
+
+- EDITORS:
+  - Draw.io:
+      href: http://drawio.127.0.0.1.traefik.me:9000
+      icon: mdi-drawing
+      description: Diagrams
+  - Excalidraw:
+      href: http://excalidraw.127.0.0.1.traefik.me:9000
+      icon: mdi-draw
+      description: Whiteboard
+  - HedgeDoc:
+      href: http://hedgedoc.127.0.0.1.traefik.me:9000
+      icon: mdi-note-text
+      description: Collaborative Markdown
+  - Kroki:
+      href: http://kroki.127.0.0.1.traefik.me:9000
+      icon: mdi-chart-tree
+      description: Diagrams as Code
+
+- DOCUMENTS:
+  - Paperless-ngx:
+      href: http://paperless.127.0.0.1.traefik.me:9000
+      icon: mdi-file-document
+      description: Document Management
+  - Tandoor:
+      href: http://tandoor.127.0.0.1.traefik.me:9000
+      icon: mdi-silverware-fork-knife
+      description: Recipe Manager
+
+- MONITORING:
+  - Grafana:
+      href: http://grafana.127.0.0.1.traefik.me:9000
+      icon: si-grafana
+      description: Dashboards
+
+- EXTERNAL:
+  - Digital Ocean:
+      href: https://cloud.digitalocean.com
+      icon: si-digitalocean
+      description: Digital Ocean Dashboard
+  - GitHub:
+      href: https://github.com/drouiz
+      icon: si-github
+      description: My GitHub Profile
+  - GitLab:
+      href: https://gitlab.com
+      icon: si-gitlab
+      description: GitLab repositories
+  - Gmail:
+      href: https://mail.google.com
+      icon: si-gmail
+      description: Google Mail
+  - drouiz.com:
+      href: https://drouiz.com
+      icon: mdi-web
+      description: Personal website
+  - Elegant Maker:
+      href: https://elegant_maker.com
+      icon: mdi-palette
+      description: Elegant Maker website
+  - Beserker Zen:
+      href: https://beserkerzen.com
+      icon: mdi-yin-yang
+      description: Beserker Zen website

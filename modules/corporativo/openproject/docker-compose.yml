@@ -4,10 +4,15 @@ services:
     container_name: openproject-infra
     restart: unless-stopped
     environment:
-      OPENPROJECT_SECRET_KEY_BASE: secret-key-base
+      OPENPROJECT_SECRET_KEY_BASE: ${OPENPROJECT_SECRET:-secret-key-base-change-me}
       OPENPROJECT_HOST__NAME: openproject.127.0.0.1.traefik.me:9000
       OPENPROJECT_HTTPS: "false"
+      # Database
       DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${OPENPROJECT_DB:-openproject}
+      # Admin seed user (first install only)
+      OPENPROJECT_SEED_ADMIN_USER_NAME: ${ADMIN_USER:-admin}
+      OPENPROJECT_SEED_ADMIN_USER_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      OPENPROJECT_SEED_ADMIN_USER_MAIL: ${ADMIN_EMAIL:-admin@localhost}
     volumes:
       - openproject-data:/var/openproject/assets
     labels:

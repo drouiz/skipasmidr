@@ -77,6 +77,216 @@ http:
         - web
       service: n8n
 
+    # Odoo (ERP)
+    odoo:
+      rule: "Host(`odoo.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: odoo
+
+    # Dolibarr (ERP/CRM)
+    dolibarr:
+      rule: "Host(`dolibarr.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: dolibarr
+
+    # OpenProject (Project Management)
+    openproject:
+      rule: "Host(`openproject.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: openproject
+
+    # Mautic (Marketing Automation)
+    mautic:
+      rule: "Host(`mautic.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: mautic
+
+    # NocoDB (Airtable alternative)
+    nocodb:
+      rule: "Host(`nocodb.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: nocodb
+
+    # phpMyAdmin (MariaDB/MySQL admin)
+    phpmyadmin:
+      rule: "Host(`phpmyadmin.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: phpmyadmin
+
+    # Superset (Data Visualization)
+    superset:
+      rule: "Host(`superset.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: superset
+
+    # SuiteCRM (CRM)
+    suitecrm:
+      rule: "Host(`suitecrm.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: suitecrm
+
+    # Grafana (Monitoring)
+    grafana:
+      rule: "Host(`grafana.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: grafana
+
+    # Code Server (VS Code in browser)
+    code-server:
+      rule: "Host(`code-server.127.0.0.1.traefik.me`) || Host(`code.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: code-server
+
+    # Lighthouse CI Server (includes lighthouse.* and lhci.*)
+    lhci:
+      rule: "Host(`lhci.127.0.0.1.traefik.me`) || Host(`lighthouse.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: lhci
+
+    # Hoppscotch (API testing)
+    hoppscotch:
+      rule: "Host(`hoppscotch.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: hoppscotch
+
+    # Jupyter (Notebooks)
+    jupyter:
+      rule: "Host(`jupyter.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: jupyter
+
+    # Prefect (Workflow Orchestration)
+    prefect:
+      rule: "Host(`prefect.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: prefect
+
+    # Nexus (Artifact Repository)
+    nexus:
+      rule: "Host(`nexus.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: nexus
+
+    # Harbor (Container Registry)
+    harbor:
+      rule: "Host(`harbor.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: harbor
+
+    # Headlamp (Kubernetes Dashboard)
+    headlamp:
+      rule: "Host(`headlamp.127.0.0.1.traefik.me`) || Host(`k8s.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: headlamp
+
+    # Swagger (API Documentation)
+    swagger:
+      rule: "Host(`swagger.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: swagger
+
+    # Draw.io (Diagrams)
+    drawio:
+      rule: "Host(`drawio.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: drawio
+
+    # Excalidraw (Whiteboard)
+    excalidraw:
+      rule: "Host(`excalidraw.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: excalidraw
+
+    # HedgeDoc (Markdown)
+    hedgedoc:
+      rule: "Host(`hedgedoc.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: hedgedoc
+
+    # Kroki (Diagrams as Code)
+    kroki:
+      rule: "Host(`kroki.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: kroki
+
+    # JSON Crack (JSON Visualizer)
+    jsoncrack:
+      rule: "Host(`jsoncrack.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: jsoncrack
+
+    # IT-Tools (Dev Utilities)
+    it-tools:
+      rule: "Host(`tools.127.0.0.1.traefik.me`) || Host(`it-tools.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: it-tools
+
+    # Paperless-ngx (Documents)
+    paperless:
+      rule: "Host(`paperless.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: paperless
+
+    # Tandoor (Recipes)
+    tandoor:
+      rule: "Host(`tandoor.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: tandoor
+
+    # ArgoCD (GitOps)
+    argocd:
+      rule: "Host(`argocd.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: argocd
+
+    # SonarQube (Code Quality)
+    sonarqube:
+      rule: "Host(`sonarqube.127.0.0.1.traefik.me`) || Host(`sonar.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: sonarqube
+
+    # GitLab (Git Server)
+    gitlab:
+      rule: "Host(`gitlab.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: gitlab
+
+    # JFrog Artifactory (Artifact Repository)
+    jfrog:
+      rule: "Host(`jfrog.127.0.0.1.traefik.me`) || Host(`artifactory.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: jfrog
+
   services:
     dashy:
       loadBalancer:
@@ -127,3 +337,153 @@ http:
       loadBalancer:
         servers:
           - url: "http://n8n-infra:5678"
+
+    odoo:
+      loadBalancer:
+        servers:
+          - url: "http://odoo-infra:8069"
+
+    dolibarr:
+      loadBalancer:
+        servers:
+          - url: "http://dolibarr-infra:80"
+
+    openproject:
+      loadBalancer:
+        servers:
+          - url: "http://openproject-infra:8080"
+
+    mautic:
+      loadBalancer:
+        servers:
+          - url: "http://mautic-infra:80"
+
+    nocodb:
+      loadBalancer:
+        servers:
+          - url: "http://nocodb-infra:8080"
+
+    phpmyadmin:
+      loadBalancer:
+        servers:
+          - url: "http://phpmyadmin-infra:80"
+
+    superset:
+      loadBalancer:
+        servers:
+          - url: "http://superset-infra:8088"
+
+    suitecrm:
+      loadBalancer:
+        servers:
+          - url: "http://suitecrm-infra:80"
+
+    grafana:
+      loadBalancer:
+        servers:
+          - url: "http://grafana-infra:3000"
+
+    code-server:
+      loadBalancer:
+        servers:
+          - url: "http://code-server-infra:8080"
+
+    lhci:
+      loadBalancer:
+        servers:
+          - url: "http://lhci-server-infra:9001"
+
+    hoppscotch:
+      loadBalancer:
+        servers:
+          - url: "http://hoppscotch-infra:3000"
+
+    jupyter:
+      loadBalancer:
+        servers:
+          - url: "http://jupyter-infra:8888"
+
+    prefect:
+      loadBalancer:
+        servers:
+          - url: "http://prefect-infra:4200"
+
+    nexus:
+      loadBalancer:
+        servers:
+          - url: "http://nexus-infra:8081"
+
+    harbor:
+      loadBalancer:
+        servers:
+          - url: "http://harbor-core-infra:8080"
+
+    headlamp:
+      loadBalancer:
+        servers:
+          - url: "http://headlamp-infra:4466"
+
+    swagger:
+      loadBalancer:
+        servers:
+          - url: "http://swagger-editor-infra:80"
+
+    drawio:
+      loadBalancer:
+        servers:
+          - url: "http://drawio-infra:8080"
+
+    excalidraw:
+      loadBalancer:
+        servers:
+          - url: "http://excalidraw-infra:80"
+
+    hedgedoc:
+      loadBalancer:
+        servers:
+          - url: "http://hedgedoc-infra:3000"
+
+    kroki:
+      loadBalancer:
+        servers:
+          - url: "http://kroki-infra:8000"
+
+    jsoncrack:
+      loadBalancer:
+        servers:
+          - url: "http://jsoncrack-infra:8080"
+
+    it-tools:
+      loadBalancer:
+        servers:
+          - url: "http://it-tools-infra:80"
+
+    paperless:
+      loadBalancer:
+        servers:
+          - url: "http://paperless-infra:8000"
+
+    tandoor:
+      loadBalancer:
+        servers:
+          - url: "http://tandoor-infra:8080"
+
+    argocd:
+      loadBalancer:
+        servers:
+          - url: "http://argocd-infra:8080"
+
+    sonarqube:
+      loadBalancer:
+        servers:
+          - url: "http://sonarqube-infra:9000"
+
+    gitlab:
+      loadBalancer:
+        servers:
+          - url: "http://gitlab-infra:80"
+
+    jfrog:
+      loadBalancer:
+        servers:
+          - url: "http://jfrog-infra:8082"

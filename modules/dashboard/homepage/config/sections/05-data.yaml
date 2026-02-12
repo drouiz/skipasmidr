@@ -1,0 +1,25 @@
+- DATA:
+  - Airflow:
+      href: http://airflow.127.0.0.1.traefik.me:9000
+      icon: si-apacheairflow
+      description: Workflow Orchestration
+  - Dagster:
+      href: http://dagster.127.0.0.1.traefik.me:9000
+      icon: mdi-pipe
+      description: Data Orchestration
+  - Prefect:
+      href: http://prefect.127.0.0.1.traefik.me:9000
+      icon: mdi-wave
+      description: Workflow Orchestration
+  - Superset:
+      href: http://superset.127.0.0.1.traefik.me:9000
+      icon: si-apachesuperset
+      description: Data Visualization
+  - Trino:
+      href: http://trino.127.0.0.1.traefik.me:9000
+      icon: si-trino
+      description: SQL Query Engine
+  - NocoDB:
+      href: http://nocodb.127.0.0.1.traefik.me:9000
+      icon: mdi-table
+      description: Airtable Alternative

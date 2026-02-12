@@ -139,7 +139,8 @@ def load_external_links() -> list:
     return []
 
 
-def run_command(cmd: list, cwd: Optional[Path] = None, capture: bool = False) -> tuple:
+def run_command(cmd: list, cwd: Optional[Path] = None, capture: bool = False, timeout: int = 300) -> tuple:
+    """Run a command with timeout (default 5 minutes)."""
     try:
         logger.debug(f"Running: {' '.join(str(c) for c in cmd)}")
         result = subprocess.run(
@@ -147,9 +148,13 @@ def run_command(cmd: list, cwd: Optional[Path] = None, capture: bool = False) ->
             cwd=cwd,
             capture_output=capture,
             text=True,
-            check=False
+            check=False,
+            timeout=timeout
         )
         return result.returncode == 0, result.stdout if capture else ""
+    except subprocess.TimeoutExpired:
+        logger.error(f"Command timed out after {timeout}s")
+        return False, "timeout"
     except Exception as e:
         logger.error(f"Command failed: {e}")
         return False, str(e)
@@ -255,9 +260,34 @@ def get_running_containers() -> Set[str]:
 
 
 def get_running_services() -> List[str]:
-    """Get list of running services (without -infra suffix)."""
+    """Get list of running services (without -infra suffix).
+
+    Maps container names to logical service names for E2E testing.
+    """
     containers = get_running_containers()
-    return sorted([c.replace("-infra", "") for c in containers if c])
+    # Map some container names to their logical service name
+    name_map = {
+        "lhci-server": "lighthouse",
+        "redis-commander": "redis",
+        "airflow-scheduler": None,
+        "airflow-init": None,
+        "dagster-daemon": None,
+        "prefect-worker": None,
+        "harbor-registry": None,
+        "harbor-core": "harbor",
+        "docker-registry": "registry",
+        "registry-ui": None,
+    }
+    services = []
+    for c in containers:
+        name = c.replace("-infra", "")
+        if name in name_map:
+            mapped = name_map[name]
+            if mapped:
+                services.append(mapped)
+        else:
+            services.append(name)
+    return sorted(set(services))
 
 
 # ============================================================================
@@ -392,8 +422,15 @@ def generate_env_file() -> Path:
     return output_file
 
 
-def docker_compose_unified(action: str, compose_file: Path = None) -> bool:
-    """Execute docker compose with unified file."""
+def docker_compose_unified(action: str, compose_file: Path = None, build: bool = False, timeout: int = 300) -> bool:
+    """Execute docker compose with unified file.
+
+    Args:
+        action: The docker compose action (up, down, restart, etc.)
+        compose_file: Path to compose file (default: .temp/docker-compose.yml)
+        build: Whether to build images on 'up' action (default: True)
+        timeout: Command timeout in seconds (default: 300)
+    """
     if compose_file is None:
         compose_file = TEMP_DIR / "docker-compose.yml"
 
@@ -409,7 +446,12 @@ def docker_compose_unified(action: str, compose_file: Path = None) -> bool:
         cmd.extend(["--env-file", str(env_file)])
 
     if action == "up":
-        cmd.extend(["up", "-d", "--remove-orphans", "--build"])
+        # Remove stopped containers that might conflict (exited/created status)
+        cleanup_cmd = ["docker", "container", "prune", "-f", "--filter", "label=com.docker.compose.project=" + PROJECT_NAME]
+        run_command(cleanup_cmd, timeout=30)
+        cmd.extend(["up", "-d", "--remove-orphans"])
+        if build:
+            cmd.append("--build")
     elif action == "down":
         cmd.extend(["down", "--remove-orphans"])
     elif action == "restart":
@@ -421,7 +463,7 @@ def docker_compose_unified(action: str, compose_file: Path = None) -> bool:
     else:
         cmd.append(action)
 
-    ok, _ = run_command(cmd, cwd=TEMP_DIR)
+    ok, _ = run_command(cmd, cwd=TEMP_DIR, timeout=timeout)
     # Flush output to ensure it's displayed
     sys.stdout.flush()
     sys.stderr.flush()
@@ -838,7 +880,7 @@ def cmd_add(args):
     generate_env_file()
     compose_file = generate_unified_compose(all_services_set, services)
 
-    # Execute docker compose
+    # Execute docker compose (no --build, we use pre-built images)
     logger.info("Starting containers...")
     if docker_compose_unified("up", compose_file):
         logger.success("Services added")
@@ -887,13 +929,15 @@ def cmd_down(args):
 
         generate_env_file()
         compose_file = generate_unified_compose(all_services_set, services)
-        docker_compose_unified("up", compose_file)
+        # No build needed when removing services, use shorter timeout
+        docker_compose_unified("up", compose_file, build=False, timeout=120)
     else:
         # Leave only core
         core_services = set(services["core"].keys())
         generate_env_file()
         compose_file = generate_unified_compose(core_services, services)
-        docker_compose_unified("up", compose_file)
+        # No build needed when removing services, use shorter timeout
+        docker_compose_unified("up", compose_file, build=False, timeout=120)
 
     # Update state
     state["active"] = list(remaining)
@@ -1100,15 +1144,18 @@ def cmd_clean(args):
     logger.success("Cleanup completed")
 
 
+
 def cmd_test(args):
     """Run E2E tests on services."""
     if E2ETest is None:
         logger.error("E2ETest not available. Check libs/testing module.")
         return
 
-    # Load active services from state
+    # Detect running services from Docker + state file
+    running = get_running_services()
     state = load_state()
-    active_services = state.get("active", [])
+    state_services = state.get("active", [])
+    active_services = list(set(running + state_services))
 
     tester = E2ETest()
 

@@ -1,0 +1,4 @@
+- datetime:
+    format:
+      dateStyle: short
+      timeStyle: short

@@ -1,0 +1,18 @@
+- datetime:
+    format:
+      dateStyle: short
+      timeStyle: short
+
+# Open-Meteo - Free weather API, no API key needed
+- openmeteo:
+    label: Weather
+    latitude: 41.3851
+    longitude: 2.1734
+    timezone: Europe/Madrid
+    units: metric
+    cache: 15
+
+- resources:
+    cpu: true
+    memory: true
+    disk: /

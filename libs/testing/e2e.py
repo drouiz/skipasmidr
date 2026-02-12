@@ -98,15 +98,17 @@ class E2ETest:
         """Build URL for a service."""
         return f"http://{service}.{self.base_domain}:{self.port}"
 
-    def _curl_test(self, url: str, follow_redirects: bool = False, timeout: int = 10) -> Tuple[int, float, str]:
+    def _curl_test(self, url: str, follow_redirects: bool = False, timeout: int = 10, use_get: bool = False) -> Tuple[int, float, str]:
         """Execute curl test and return (status_code, response_time_ms, redirect_url)."""
         try:
             cmd = [
-                "curl", "-sI",
+                "curl", "-s",
                 "-w", "%{http_code}|%{time_total}|%{redirect_url}",
                 "-o", "nul" if subprocess.sys.platform == "win32" else "/dev/null",
                 "--max-time", str(timeout),
             ]
+            if not use_get:
+                cmd.insert(1, "-I")
             if follow_redirects:
                 cmd.append("-L")
             cmd.append(url)
@@ -141,9 +143,9 @@ class E2ETest:
         except Exception:
             return 0, 0, ""
 
-    def _test_service(self, name: str, url: str, accept_redirects: bool = True) -> TestResult:
+    def _test_service(self, name: str, url: str, accept_redirects: bool = True, use_get: bool = False) -> TestResult:
         """Test a single service."""
-        http_code, response_time, redirect_url = self._curl_test(url)
+        http_code, response_time, redirect_url = self._curl_test(url, use_get=use_get)
 
         if http_code == 0:
             status = TestStatus.FAIL
@@ -219,6 +221,104 @@ class E2ETest:
 
     def _test_n8n(self) -> TestResult:
         return self._test_service("n8n", self._build_url("n8n"))
+
+    def _test_odoo(self) -> TestResult:
+        return self._test_service("Odoo", self._build_url("odoo"))
+
+    def _test_dolibarr(self) -> TestResult:
+        return self._test_service("Dolibarr", self._build_url("dolibarr"))
+
+    def _test_openproject(self) -> TestResult:
+        return self._test_service("OpenProject", self._build_url("openproject"))
+
+    def _test_mautic(self) -> TestResult:
+        return self._test_service("Mautic", self._build_url("mautic"))
+
+    def _test_nocodb(self) -> TestResult:
+        return self._test_service("NocoDB", self._build_url("nocodb"))
+
+    def _test_phpmyadmin(self) -> TestResult:
+        return self._test_service("phpMyAdmin", self._build_url("phpmyadmin"))
+
+    def _test_superset(self) -> TestResult:
+        return self._test_service("Superset", self._build_url("superset"))
+
+    def _test_grafana(self) -> TestResult:
+        return self._test_service("Grafana", self._build_url("grafana"))
+
+    # DEVELOPER
+    def _test_code_server(self) -> TestResult:
+        return self._test_service("Code Server", self._build_url("code"))
+
+    def _test_backstage(self) -> TestResult:
+        return self._test_service("Backstage", self._build_url("backstage"))
+
+    def _test_lighthouse(self) -> TestResult:
+        return self._test_service("Lighthouse", self._build_url("lighthouse"))
+
+    def _test_lhci(self) -> TestResult:
+        return self._test_service("LHCI Server", self._build_url("lhci"))
+
+    def _test_hoppscotch(self) -> TestResult:
+        return self._test_service("Hoppscotch", self._build_url("hoppscotch"))
+
+    # DEVOPS
+    def _test_nexus(self) -> TestResult:
+        return self._test_service("Nexus", self._build_url("nexus"))
+
+    def _test_harbor(self) -> TestResult:
+        return self._test_service("Harbor", self._build_url("harbor"))
+
+    def _test_headlamp(self) -> TestResult:
+        return self._test_service("Headlamp", self._build_url("headlamp"))
+
+    def _test_argocd(self) -> TestResult:
+        return self._test_service("ArgoCD", self._build_url("argocd"))
+
+    def _test_sonarqube(self) -> TestResult:
+        return self._test_service("SonarQube", self._build_url("sonarqube"))
+
+    def _test_gitlab(self) -> TestResult:
+        return self._test_service("GitLab", self._build_url("gitlab"))
+
+    def _test_jfrog(self) -> TestResult:
+        return self._test_service("JFrog", self._build_url("jfrog"))
+
+    # EDITORS
+    def _test_drawio(self) -> TestResult:
+        return self._test_service("Draw.io", self._build_url("drawio"))
+
+    def _test_excalidraw(self) -> TestResult:
+        return self._test_service("Excalidraw", self._build_url("excalidraw"))
+
+    def _test_hedgedoc(self) -> TestResult:
+        return self._test_service("HedgeDoc", self._build_url("hedgedoc"))
+
+    def _test_kroki(self) -> TestResult:
+        return self._test_service("Kroki", self._build_url("kroki"), use_get=True)
+
+    def _test_swagger(self) -> TestResult:
+        return self._test_service("Swagger", self._build_url("swagger"))
+
+    def _test_jsoncrack(self) -> TestResult:
+        return self._test_service("JSON Crack", self._build_url("jsoncrack"))
+
+    def _test_it_tools(self) -> TestResult:
+        return self._test_service("IT-Tools", self._build_url("tools"))
+
+    # DOCUMENTS
+    def _test_paperless(self) -> TestResult:
+        return self._test_service("Paperless", self._build_url("paperless"))
+
+    def _test_tandoor(self) -> TestResult:
+        return self._test_service("Tandoor", self._build_url("tandoor"))
+
+    # DATA (missing)
+    def _test_prefect(self) -> TestResult:
+        return self._test_service("Prefect", self._build_url("prefect"))
+
+    def _test_jupyter(self) -> TestResult:
+        return self._test_service("Jupyter", self._build_url("jupyter"))
 
     # === Public methods ===
 
@@ -307,12 +407,51 @@ class E2ETest:
             # INFRA
             "pgadmin": self._test_pgadmin,
             "postgres": self._test_pgadmin,  # pgadmin tests postgres access
+            "mariadb": self._test_phpmyadmin,  # phpmyadmin tests mariadb access
             "redis": self._test_redis,
             # DATA
             "airflow": self._test_airflow,
             "dagster": self._test_dagster,
             "trino": self._test_trino,
             "n8n": self._test_n8n,
+            "nocodb": self._test_nocodb,
+            "superset": self._test_superset,
+            # CORPORATIVO
+            "odoo": self._test_odoo,
+            "dolibarr": self._test_dolibarr,
+            "openproject": self._test_openproject,
+            "mautic": self._test_mautic,
+            # DEVELOPER
+            "code-server": self._test_code_server,
+            "backstage": self._test_backstage,
+            "lighthouse": self._test_lighthouse,
+            "lhci": self._test_lhci,
+            "hoppscotch": self._test_hoppscotch,
+            # MONITORING
+            "grafana": self._test_grafana,
+            # DEVOPS
+            "nexus": self._test_nexus,
+            "harbor": self._test_harbor,
+            "headlamp": self._test_headlamp,
+            "argocd": self._test_argocd,
+            "sonarqube": self._test_sonarqube,
+            "gitlab": self._test_gitlab,
+            "jfrog": self._test_jfrog,
+            # EDITORS
+            "drawio": self._test_drawio,
+            "excalidraw": self._test_excalidraw,
+            "hedgedoc": self._test_hedgedoc,
+            "kroki": self._test_kroki,
+            "swagger": self._test_swagger,
+            "swagger-editor": self._test_swagger,
+            "jsoncrack": self._test_jsoncrack,
+            "it-tools": self._test_it_tools,
+            # DOCUMENTS
+            "paperless": self._test_paperless,
+            "tandoor": self._test_tandoor,
+            # DATA (extra)
+            "prefect": self._test_prefect,
+            "jupyter": self._test_jupyter,
         }
 
         # Core services are always tested
@@ -337,6 +476,8 @@ class E2ETest:
             infra_tests = []
             if "postgres" in active_set or "pgadmin" in active_set:
                 infra_tests.append(self._test_pgadmin)
+            if "mariadb" in active_set:
+                infra_tests.append(self._test_phpmyadmin)
             if "redis" in active_set:
                 infra_tests.append(self._test_redis)
 
@@ -350,6 +491,82 @@ class E2ETest:
                 data_tests.append(self._test_trino)
             if "n8n" in active_set:
                 data_tests.append(self._test_n8n)
+            if "nocodb" in active_set:
+                data_tests.append(self._test_nocodb)
+            if "superset" in active_set:
+                data_tests.append(self._test_superset)
+            if "prefect" in active_set:
+                data_tests.append(self._test_prefect)
+
+            # Filter corporativo tests
+            corp_tests = []
+            if "odoo" in active_set:
+                corp_tests.append(self._test_odoo)
+            if "dolibarr" in active_set:
+                corp_tests.append(self._test_dolibarr)
+            if "openproject" in active_set:
+                corp_tests.append(self._test_openproject)
+            if "mautic" in active_set:
+                corp_tests.append(self._test_mautic)
+
+            # Filter developer tests
+            dev_tests = []
+            if "code-server" in active_set:
+                dev_tests.append(self._test_code_server)
+            if "backstage" in active_set:
+                dev_tests.append(self._test_backstage)
+            if "lighthouse" in active_set:
+                dev_tests.append(self._test_lhci)  # lighthouse and lhci both point to LHCI server
+            if "hoppscotch" in active_set:
+                dev_tests.append(self._test_hoppscotch)
+            if "jupyter" in active_set:
+                dev_tests.append(self._test_jupyter)
+
+            # Filter monitoring tests
+            mon_tests = []
+            if "grafana" in active_set:
+                mon_tests.append(self._test_grafana)
+
+            # Filter devops tests
+            devops_tests = []
+            if "nexus" in active_set:
+                devops_tests.append(self._test_nexus)
+            if "harbor" in active_set:
+                devops_tests.append(self._test_harbor)
+            if "headlamp" in active_set:
+                devops_tests.append(self._test_headlamp)
+            if "argocd" in active_set:
+                devops_tests.append(self._test_argocd)
+            if "sonarqube" in active_set:
+                devops_tests.append(self._test_sonarqube)
+            if "gitlab" in active_set:
+                devops_tests.append(self._test_gitlab)
+            if "jfrog" in active_set:
+                devops_tests.append(self._test_jfrog)
+
+            # Filter editor tests
+            editor_tests = []
+            if "drawio" in active_set:
+                editor_tests.append(self._test_drawio)
+            if "excalidraw" in active_set:
+                editor_tests.append(self._test_excalidraw)
+            if "hedgedoc" in active_set:
+                editor_tests.append(self._test_hedgedoc)
+            if "kroki" in active_set:
+                editor_tests.append(self._test_kroki)
+            if "swagger" in active_set or "swagger-editor" in active_set:
+                editor_tests.append(self._test_swagger)
+            if "jsoncrack" in active_set:
+                editor_tests.append(self._test_jsoncrack)
+            if "it-tools" in active_set:
+                editor_tests.append(self._test_it_tools)
+
+            # Filter document tests
+            doc_tests = []
+            if "paperless" in active_set:
+                doc_tests.append(self._test_paperless)
+            if "tandoor" in active_set:
+                doc_tests.append(self._test_tandoor)
 
             tests_to_run = [
                 ("CORE", core_tests),
@@ -358,6 +575,18 @@ class E2ETest:
                 tests_to_run.append(("INFRA", infra_tests))
             if data_tests:
                 tests_to_run.append(("DATA", data_tests))
+            if corp_tests:
+                tests_to_run.append(("CORPORATIVO", corp_tests))
+            if dev_tests:
+                tests_to_run.append(("DEVELOPER", dev_tests))
+            if mon_tests:
+                tests_to_run.append(("MONITORING", mon_tests))
+            if devops_tests:
+                tests_to_run.append(("DEVOPS", devops_tests))
+            if editor_tests:
+                tests_to_run.append(("EDITORS", editor_tests))
+            if doc_tests:
+                tests_to_run.append(("DOCUMENTS", doc_tests))
 
         if verbose:
             logger.info("=" * 50)

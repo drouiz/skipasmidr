@@ -1,0 +1,29 @@
+- EDITORS:
+  - IT-Tools:
+      href: http://tools.127.0.0.1.traefik.me:9000
+      icon: mdi-toolbox
+      description: Base64, MD5, JSON, YAML, UUID...
+  - JSON Crack:
+      href: http://jsoncrack.127.0.0.1.traefik.me:9000
+      icon: mdi-code-json
+      description: JSON Visualizer
+  - Swagger:
+      href: http://swagger.127.0.0.1.traefik.me:9000
+      icon: si-swagger
+      description: API Documentation
+  - Draw.io:
+      href: http://drawio.127.0.0.1.traefik.me:9000
+      icon: mdi-sitemap
+      description: Diagrams
+  - Excalidraw:
+      href: http://excalidraw.127.0.0.1.traefik.me:9000
+      icon: mdi-draw
+      description: Whiteboard
+  - HedgeDoc:
+      href: http://hedgedoc.127.0.0.1.traefik.me:9000
+      icon: mdi-language-markdown
+      description: Markdown Editor
+  - Kroki:
+      href: http://kroki.127.0.0.1.traefik.me:9000
+      icon: mdi-chart-tree
+      description: Mermaid, PlantUML, GraphViz...

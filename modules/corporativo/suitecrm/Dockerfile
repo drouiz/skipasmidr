@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libzip-dev \
     libldap2-dev \
-    libc-client-dev \
+    libc-client2007e-dev \
     libkrb5-dev \
     libicu-dev \
     zip \
