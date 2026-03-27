@@ -1,0 +1,8 @@
+{
+  "name": "JSON Crack",
+  "icon": "fas fa-project-diagram",
+  "url": "http://jsoncrack.127.0.0.1.traefik.me:9000",
+  "category": "EDITORS",
+  "description": "JSON data visualizer and editor",
+  "tags": ["json", "visualizer", "editor", "data"]
+}

@@ -5,25 +5,25 @@ services:
     restart: unless-stopped
     working_dir: /opt/dagster/dagster_home
     entrypoint:
-      - dagster-webserver
-      - -h
-      - "0.0.0.0"
-      - -p
-      - "3000"
-      - -w
-      - /opt/dagster/dagster_home/workspace.yaml
+      - sh
+      - -c
+      - "pip install ibis-framework[duckdb] requests pandas pyarrow pyyaml && dagster-webserver -h 0.0.0.0 -p 3000 -w /opt/dagster/dagster_home/workspace.yaml"
     environment:
       DAGSTER_HOME: /opt/dagster/dagster_home
       DAGSTER_POSTGRES_HOST: postgres-infra
       DAGSTER_POSTGRES_USER: ${POSTGRES_USER:-admin}
       DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
       DAGSTER_POSTGRES_DB: ${DAGSTER_DB:-dagster}
-      PYTHONPATH: /opt/dagster/code/libs
+      PYTHONPATH: /opt/dagster/code
+      AEMET_API_KEY: ${AEMET_API_KEY}
+      CONFIG_PATH: /opt/data/config.yaml
+      DATA_OUTPUT_DIR: /opt/data/dagster
     volumes:
       - ./workspace.yaml:/opt/dagster/dagster_home/workspace.yaml:ro
       - ./dagster.yaml:/opt/dagster/dagster_home/dagster.yaml:ro
       - dagster-data:/opt/dagster/dagster_home/storage
-      - ../../../code:/opt/dagster/code:ro
+      - ../../../../data/dagster:/opt/dagster/code:ro
+      - ../../../../data:/opt/data:rw
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dagster.rule=Host(`dagster.127.0.0.1.traefik.me`)"
@@ -38,20 +38,25 @@ services:
     restart: unless-stopped
     working_dir: /opt/dagster/dagster_home
     entrypoint:
-      - dagster-daemon
-      - run
+      - sh
+      - -c
+      - "pip install ibis-framework[duckdb] requests pandas pyarrow pyyaml && dagster-daemon run"
     environment:
       DAGSTER_HOME: /opt/dagster/dagster_home
       DAGSTER_POSTGRES_HOST: postgres-infra
       DAGSTER_POSTGRES_USER: ${POSTGRES_USER:-admin}
       DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
       DAGSTER_POSTGRES_DB: ${DAGSTER_DB:-dagster}
-      PYTHONPATH: /opt/dagster/code/libs
+      PYTHONPATH: /opt/dagster/code
+      AEMET_API_KEY: ${AEMET_API_KEY}
+      CONFIG_PATH: /opt/data/config.yaml
+      DATA_OUTPUT_DIR: /opt/data/dagster
     volumes:
       - ./workspace.yaml:/opt/dagster/dagster_home/workspace.yaml:ro
       - ./dagster.yaml:/opt/dagster/dagster_home/dagster.yaml:ro
       - dagster-data:/opt/dagster/dagster_home/storage
-      - ../../../code:/opt/dagster/code:ro
+      - ../../../../data/dagster:/opt/dagster/code:ro
+      - ../../../../data:/opt/data:rw
     networks:
       - infra-network
 

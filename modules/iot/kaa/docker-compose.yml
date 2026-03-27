@@ -1,19 +1,13 @@
-services:
-  kaa:
-    image: kaaproject/kaa:${KAA_VERSION:-latest}
-    container_name: kaa-infra
-    restart: unless-stopped
-    environment:
-      - KAA_LICENSE_KEY=${KAA_LICENSE_KEY:-}
-    volumes:
-      - ../../../volumes/kaa:/var/kaa
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.kaa.rule=Host(`kaa.127.0.0.1.traefik.me`)"
-      - "traefik.http.routers.kaa.entrypoints=web"
-      - "traefik.http.services.kaa.loadbalancer.server.port=8080"
-    networks:
-      - infra-network
+# NOTE: KaaIoT is a commercial platform with no single public Docker image.
+# It uses a microservices architecture deployed via Kubernetes/Helm.
+# To use Kaa, you need:
+# 1. A KaaIoT Cloud account or Helm charts from kaaiot.com
+# 2. Configure your cluster following https://docs.kaaiot.io
+#
+# For now, this service is disabled.
+
+# Placeholder service to keep valid docker-compose
+services: {}
 
 networks:
   infra-network:

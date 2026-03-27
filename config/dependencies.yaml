@@ -90,6 +90,16 @@ uptime-kuma: []
 # IoT
 home-assistant: []
 frigate: []
+eclipse-kura: []
+
+balena:
+  - postgres
+  - redis
+
+openremote:
+  - postgres
+
+thingsboard: []
 
 # Wiki
 wikijs:
@@ -174,6 +184,9 @@ ntfy: []
 # Dashboard alternatives
 homer: []
 organizr: []
+
+# Editors adicionales
+asyncapi: []
 
 # Otros sin dependencias
 node-red: []

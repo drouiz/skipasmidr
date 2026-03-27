@@ -1,0 +1,8 @@
+{
+  "name": "IT-Tools",
+  "icon": "fas fa-toolbox",
+  "url": "http://tools.127.0.0.1.traefik.me:9000",
+  "category": "EDITORS",
+  "description": "Collection of developer utilities",
+  "tags": ["tools", "utilities", "developer", "converters"]
+}

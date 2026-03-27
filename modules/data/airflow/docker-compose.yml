@@ -1,39 +1,32 @@
 services:
-  airflow-init:
-    image: apache/airflow:${AIRFLOW_VERSION:-2.8.0}
-    container_name: airflow-init-infra
-    environment:
-      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${AIRFLOW_DB:-airflow}
-      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY:-}
-      - _AIRFLOW_DB_MIGRATE=true
-      - _AIRFLOW_WWW_USER_CREATE=true
-      - _AIRFLOW_WWW_USER_USERNAME=${AIRFLOW_USER:-admin}
-      - _AIRFLOW_WWW_USER_PASSWORD=${AIRFLOW_PASSWORD:-admin123}
-      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@localhost}
-    entrypoint: /bin/bash
-    command:
-      - -c
-      - |
-        airflow db migrate
-        airflow users create --role Admin --username $${_AIRFLOW_WWW_USER_USERNAME} --email $${ADMIN_EMAIL:-admin@localhost} --firstname Admin --lastname User --password $${_AIRFLOW_WWW_USER_PASSWORD} || true
-    networks:
-      - infra-network
-
   airflow-webserver:
     image: apache/airflow:${AIRFLOW_VERSION:-2.8.0}
     container_name: airflow-infra
     restart: unless-stopped
-    depends_on:
-      - airflow-init
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${AIRFLOW_DB:-airflow}
       - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_SECRET:-your-secret-key}
       - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/code/dags
-      - PYTHONPATH=/opt/airflow/code/libs
+      - PYTHONPATH=/opt/airflow/code
+      # Migrate DB and create admin user on startup (no init container needed)
+      - _AIRFLOW_DB_MIGRATE=true
+      - _AIRFLOW_WWW_USER_CREATE=true
+      - _AIRFLOW_WWW_USER_USERNAME=${AIRFLOW_USER:-admin}
+      - _AIRFLOW_WWW_USER_PASSWORD=${AIRFLOW_PASSWORD:-admin123}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@localhost}
+      # Deps extra que Airflow instala al arrancar
+      - _PIP_ADDITIONAL_REQUIREMENTS=requests pandas pyarrow pyyaml
+      # AEMET
+      - AEMET_API_KEY=${AEMET_API_KEY}
+      # Paths para el código Python
+      - CONFIG_PATH=/opt/data/config.yaml
+      - DATA_OUTPUT_DIR=/opt/data/airflow
     volumes:
-      - ../../../code:/opt/airflow/code:ro
+      # Código: dags/ queda en /opt/airflow/code/dags  (coincide con DAGS_FOLDER)
+      - ../../../../data/airflow:/opt/airflow/code:ro
+      # Carpeta data/ completa para config.yaml y output compartido
+      - ../../../../data:/opt/data:rw
       - airflow-logs:/opt/airflow/logs
     labels:
       - "traefik.enable=true"
@@ -48,15 +41,18 @@ services:
     image: apache/airflow:${AIRFLOW_VERSION:-2.8.0}
     container_name: airflow-scheduler-infra
     restart: unless-stopped
-    depends_on:
-      - airflow-init
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${AIRFLOW_DB:-airflow}
       - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/code/dags
-      - PYTHONPATH=/opt/airflow/code/libs
+      - PYTHONPATH=/opt/airflow/code
+      - _PIP_ADDITIONAL_REQUIREMENTS=requests pandas pyarrow pyyaml
+      - AEMET_API_KEY=${AEMET_API_KEY}
+      - CONFIG_PATH=/opt/data/config.yaml
+      - DATA_OUTPUT_DIR=/opt/data/airflow
     volumes:
-      - ../../../code:/opt/airflow/code:ro
+      - ../../../../data/airflow:/opt/airflow/code:ro
+      - ../../../../data:/opt/data:rw
       - airflow-logs:/opt/airflow/logs
     command: scheduler
     networks:

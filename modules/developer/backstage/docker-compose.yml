@@ -1,13 +1,42 @@
-# NOTE: Backstage requires a custom build - the cookiecutter image is just a template generator
-# To use Backstage, you need to:
-# 1. Run: npx @backstage/create-app
-# 2. Build your custom Docker image
-# 3. Update this file with your custom image
-#
-# For now, this service is disabled.
-
-# Placeholder service to keep valid docker-compose
-services: {}
+services:
+  backstage:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: backstage-infra:local
+    container_name: backstage-infra
+    restart: unless-stopped
+    # Wait for postgres before starting — prevents race condition when
+    # containers start simultaneously (Node.js is ready in ~5s, Postgres ~30s).
+    # node:20-bookworm has bash with /dev/tcp built-in, no extra tools needed.
+    command: >
+      /bin/bash -c "
+        echo 'Waiting for PostgreSQL at postgres-infra:5432...'
+        until bash -c 'echo >/dev/tcp/postgres-infra/5432' 2>/dev/null; do
+          echo '  still waiting...'
+          sleep 3
+        done
+        echo 'PostgreSQL ready. Starting Backstage.'
+        exec node packages/backend/dist/index.cjs.js
+          --config app-config.yaml
+          --config app-config.local.yaml
+      "
+    environment:
+      POSTGRES_HOST: postgres-infra
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: backstage
+    volumes:
+      # Mount config override externally so it can be updated without rebuilding
+      - ./app-config.local.yaml:/workspace/backstage/app-config.local.yaml:ro
+      - ./catalog-info.yaml:/catalog/catalog-info.yaml:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backstage.rule=Host(`backstage.127.0.0.1.traefik.me`)"
+      - "traefik.http.services.backstage.loadbalancer.server.port=7007"
+    networks:
+      - infra-network
 
 networks:
   infra-network:

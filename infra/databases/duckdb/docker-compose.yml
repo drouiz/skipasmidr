@@ -1,0 +1,20 @@
+services:
+  duckdb:
+    image: python:3.12-slim
+    container_name: duckdb-infra
+    restart: unless-stopped
+    entrypoint:
+      - sh
+      - -c
+      - "pip install 'duckdb>=1.0' fastapi 'uvicorn[standard]' -q && python /app/server.py"
+    volumes:
+      - ./server.py:/app/server.py:ro
+      - ../../../volumes/duckdb:/data
+    ports:
+      - "${EXPOSE_DUCKDB_PORT:-127.0.0.1:8765}:8765"
+    networks:
+      - infra-network
+
+networks:
+  infra-network:
+    external: true

@@ -1,0 +1,34 @@
+services:
+  affine:
+    image: ghcr.io/toeverything/affine-graphql:stable
+    container_name: affine-infra
+    restart: unless-stopped
+    command: >
+      sh -c "node ./scripts/self-host-predeploy && node ./dist/index.js"
+    environment:
+      NODE_OPTIONS: "--import=./scripts/register.js"
+      AFFINE_CONFIG_PATH: /root/.affine/config
+      REDIS_SERVER_HOST: redis-infra
+      DATABASE_URL: "postgresql://${ADMIN_USER:-admin}:${ADMIN_PASSWORD:-admin123}@postgres-infra:5432/${AFFINE_DB:-affine}"
+      NODE_ENV: production
+      AFFINE_ADMIN_EMAIL:    ${AFFINE_ADMIN_EMAIL:-admin@example.com}
+      AFFINE_ADMIN_PASSWORD: ${AFFINE_ADMIN_PASSWORD:-Admin1234!}
+      TELEMETRY_ENABLE: "false"
+    volumes:
+      - affine-config:/root/.affine/config
+      - affine-storage:/root/.affine/storage
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.affine.rule=Host(`affine.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.affine.entrypoints=web"
+      - "traefik.http.services.affine.loadbalancer.server.port=3010"
+    networks:
+      - infra-network
+
+volumes:
+  affine-config:
+  affine-storage:
+
+networks:
+  infra-network:
+    external: true

@@ -6,7 +6,7 @@ services:
     privileged: true
     shm_size: "256mb"
     volumes:
-      - ./config.yml:/config/config.yml:ro
+      - ./config.yml:/config/config.yml
       - frigate-media:/media/frigate
       - /etc/localtime:/etc/localtime:ro
     labels:

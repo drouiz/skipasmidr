@@ -1,0 +1,8 @@
+{
+  "name": "ThingsBoard",
+  "icon": "fas fa-microchip",
+  "url": "http://thingsboard.127.0.0.1.traefik.me:9000",
+  "category": "IOT",
+  "description": "IoT platform for device management",
+  "tags": ["iot", "telemetry", "devices", "dashboard"]
+}

@@ -6,6 +6,7 @@ services:
     privileged: true
     volumes:
       - hass-config:/config
+      - ./configuration.yaml:/config/configuration.yaml
       - /etc/localtime:/etc/localtime:ro
     labels:
       - "traefik.enable=true"

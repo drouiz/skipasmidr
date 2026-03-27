@@ -1,13 +1,108 @@
 services:
+
+  # ── MinIO ─────────────────────────────────────────────────────────────────
+  # S3-compatible storage. Buckets creados automáticamente via minio-setup.
+  minio:
+    image: minio/minio:${MINIO_VERSION:-latest}
+    container_name: minio-infra
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER:-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-admin123456}
+    volumes:
+      - ../../../../volumes/minio:/data
+    ports:
+      - "${EXPOSE_MINIO_API:-127.0.0.1:9100}:9000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`minio.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.minio.entrypoints=web"
+      - "traefik.http.routers.minio.service=minio"
+      - "traefik.http.services.minio.loadbalancer.server.port=9001"
+      - "traefik.http.routers.minio-api.rule=Host(`s3.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.minio-api.entrypoints=web"
+      - "traefik.http.routers.minio-api.service=minio-api"
+      - "traefik.http.services.minio-api.loadbalancer.server.port=9000"
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── MinIO init ────────────────────────────────────────────────────────────
+  # One-shot: crea los buckets de trabajo. Se ejecuta una vez y termina.
+  # Trino y Nessie dependen de que este servicio complete con éxito.
+  minio-setup:
+    image: minio/mc:${MINIO_MC_VERSION:-latest}
+    container_name: trino-minio-setup
+    restart: "no"
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "mc alias set minio http://minio-infra:9000 admin admin123456 &&
+       mc mb --ignore-existing minio/trino-warehouse &&
+       mc mb --ignore-existing minio/data-lake &&
+       echo 'Buckets listos: trino-warehouse, data-lake'"
+    networks:
+      - infra-network
+
+  # ── Nessie ────────────────────────────────────────────────────────────────
+  # Catálogo Iceberg tipo git. Backend en postgres-infra/nessie.
+  # API: http://nessie.127.0.0.1.traefik.me:9000
+  nessie:
+    image: projectnessie/nessie:${NESSIE_VERSION:-latest}
+    container_name: nessie-infra
+    restart: unless-stopped
+    depends_on:
+      minio-setup:
+        condition: service_completed_successfully
+    environment:
+      - NESSIE_VERSION_STORE_TYPE=JDBC
+      - QUARKUS_DATASOURCE_DB_KIND=postgresql
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://postgres-infra:5432/nessie
+      - QUARKUS_DATASOURCE_USERNAME=admin
+      - QUARKUS_DATASOURCE_PASSWORD=admin123
+    ports:
+      - "${EXPOSE_NESSIE_PORT:-127.0.0.1:19120}:19120"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nessie.rule=Host(`nessie.127.0.0.1.traefik.me`)"
+      - "traefik.http.routers.nessie.entrypoints=web"
+      - "traefik.http.services.nessie.loadbalancer.server.port=19120"
+    networks:
+      - infra-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:19120/api/v2/config"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  # ── Trino ─────────────────────────────────────────────────────────────────
+  # Query engine federado. Si un conector falla (motor caído), ese catálogo
+  # da error pero Trino sigue respondiendo al resto.
+  # UI: http://trino.127.0.0.1.traefik.me:9000
   trino:
     image: trinodb/trino:${TRINO_VERSION:-latest}
     container_name: trino-infra
     restart: unless-stopped
+    depends_on:
+      minio-setup:
+        condition: service_completed_successfully
+      nessie:
+        condition: service_healthy
     environment:
       - TRINO_ENVIRONMENT=development
     volumes:
       - ./config:/etc/trino:ro
+      - ./catalog:/etc/trino/catalog:ro
       - trino-data:/data/trino
+    ports:
+      - "${EXPOSE_TRINO_PORT:-127.0.0.1:18080}:8080"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.trino.rule=Host(`trino.127.0.0.1.traefik.me`)"
@@ -15,6 +110,11 @@ services:
       - "traefik.http.services.trino.loadbalancer.server.port=8080"
     networks:
       - infra-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/info"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
 
 volumes:
   trino-data:

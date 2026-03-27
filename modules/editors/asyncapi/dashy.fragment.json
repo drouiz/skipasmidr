@@ -1,0 +1,8 @@
+{
+  "name": "AsyncAPI Studio",
+  "icon": "fas fa-exchange-alt",
+  "url": "http://asyncapi.127.0.0.1.traefik.me:9000",
+  "category": "EDITORS",
+  "description": "Editor for async APIs (MQTT, WebSocket, Kafka...)",
+  "tags": ["api", "asyncapi", "mqtt", "websocket", "kafka", "editor"]
+}

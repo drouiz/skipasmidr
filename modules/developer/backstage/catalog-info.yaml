@@ -1,0 +1,172 @@
+---
+# ─── Infrastructure Services Catalog ─────────────────────────────────────────
+# Backstage component definitions for all deployed infra services.
+# Add new services here to make them visible in the catalog.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Core ──────────────────────────────────────────────────────────────────────
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: traefik
+  title: Traefik
+  description: Reverse proxy and load balancer. All external traffic goes through here.
+  tags: [core, networking, proxy]
+  links:
+    - url: http://traefik.127.0.0.1.traefik.me:9000
+      title: Dashboard
+spec:
+  type: service
+  lifecycle: production
+  owner: guests
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: portainer
+  title: Portainer
+  description: Docker management UI. Inspect containers, volumes and networks.
+  tags: [core, docker, management]
+  links:
+    - url: http://portainer.127.0.0.1.traefik.me:9000
+      title: Open Portainer
+spec:
+  type: service
+  lifecycle: production
+  owner: guests
+---
+# ── Databases ─────────────────────────────────────────────────────────────────
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: postgresql
+  title: PostgreSQL
+  description: Primary relational database. Shared by Airflow, Dagster, Prefect and other services.
+  tags: [database, sql]
+  links:
+    - url: http://pgadmin.127.0.0.1.traefik.me:9000
+      title: pgAdmin
+spec:
+  type: service
+  lifecycle: production
+  owner: guests
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: mongodb
+  title: MongoDB
+  description: Document database. Used by the blog (bersekerzen.com) and BAZAR.
+  tags: [database, nosql]
+spec:
+  type: service
+  lifecycle: production
+  owner: guests
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: redis
+  title: Redis
+  description: In-memory cache and message broker.
+  tags: [database, cache]
+  links:
+    - url: http://redis.127.0.0.1.traefik.me:9000
+      title: Redis Commander
+spec:
+  type: service
+  lifecycle: production
+  owner: guests
+---
+# ── Data Orchestration ────────────────────────────────────────────────────────
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: airflow
+  title: Apache Airflow
+  description: Workflow orchestration. DAGs written in Python, scheduled via cron.
+  tags: [data, orchestration, workflows]
+  links:
+    - url: http://airflow.127.0.0.1.traefik.me:9000
+      title: Open Airflow
+spec:
+  type: service
+  lifecycle: production
+  owner: guests
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: dagster
+  title: Dagster
+  description: Data orchestration platform with asset-based pipelines and built-in observability.
+  tags: [data, orchestration, assets]
+  links:
+    - url: http://dagster.127.0.0.1.traefik.me:9000
+      title: Open Dagster
+spec:
+  type: service
+  lifecycle: production
+  owner: guests
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: prefect
+  title: Prefect
+  description: Modern workflow orchestration. Python-native flows with a reactive engine.
+  tags: [data, orchestration, workflows]
+  links:
+    - url: http://prefect.127.0.0.1.traefik.me:9000
+      title: Open Prefect
+spec:
+  type: service
+  lifecycle: production
+  owner: guests
+---
+# ── Business Apps ─────────────────────────────────────────────────────────────
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: odoo
+  title: Odoo
+  description: Open-source ERP. CRM, accounting, inventory and more.
+  tags: [erp, business]
+  links:
+    - url: http://odoo.127.0.0.1.traefik.me:9000
+      title: Open Odoo
+spec:
+  type: service
+  lifecycle: production
+  owner: guests
+---
+# ── Developer Tools ───────────────────────────────────────────────────────────
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage
+  title: Backstage
+  description: This developer portal. Built with Backstage (Spotify). Catalog, TechDocs and search.
+  tags: [developer-portal, catalog]
+  links:
+    - url: http://backstage.127.0.0.1.traefik.me:9000
+      title: Open Backstage
+spec:
+  type: service
+  lifecycle: production
+  owner: guests
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: swagger-editor
+  title: Swagger Editor
+  description: Online OpenAPI / Swagger editor for designing and testing REST APIs.
+  tags: [developer, api, docs]
+  links:
+    - url: http://swagger.127.0.0.1.traefik.me:9000
+      title: Open Swagger Editor
+spec:
+  type: tool
+  lifecycle: production
+  owner: guests

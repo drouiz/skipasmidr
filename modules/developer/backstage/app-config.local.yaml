@@ -1,0 +1,36 @@
+# Override config for Docker/Traefik local testing
+# Replaces the default localhost:3000 / localhost:7007 URLs
+# Database: PostgreSQL (postgres-infra container, db=backstage)
+
+app:
+  baseUrl: http://backstage.127.0.0.1.traefik.me:9000
+
+backend:
+  baseUrl: http://backstage.127.0.0.1.traefik.me:9000
+  listen:
+    host: 0.0.0.0
+    port: 7007
+  cors:
+    origin: http://backstage.127.0.0.1.traefik.me:9000
+  database:
+    client: pg
+    connection:
+      host: postgres-infra
+      port: 5432
+      user: admin
+      password: admin123
+      database: backstage
+
+auth:
+  providers:
+    guest:
+      dangerouslyAllowOutsideDevelopment: true
+
+catalog:
+  rules:
+    - allow: [Component, System, API, Group, User, Resource, Location]
+  locations:
+    - type: file
+      target: /catalog/catalog-info.yaml
+      rules:
+        - allow: [Component, System, API, Group, User, Resource, Location]

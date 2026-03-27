@@ -422,13 +422,37 @@ def generate_env_file() -> Path:
     return output_file
 
 
-def docker_compose_unified(action: str, compose_file: Path = None, build: bool = False, timeout: int = 300) -> bool:
+def pull_service_images(compose_file: Path, service_names: List[str], timeout: int = 300) -> tuple:
+    """Pull images for specific services from a compose file.
+
+    Returns (success: bool, failed: list of service names that failed).
+    """
+    env_file = TEMP_DIR / ".env"
+    base_cmd = ["docker", "compose", "-p", PROJECT_NAME, "-f", str(compose_file)]
+    if env_file.exists():
+        base_cmd.extend(["--env-file", str(env_file)])
+
+    failed = []
+    for svc in service_names:
+        logger.info(f"  Pulling image for {svc}...")
+        cmd = base_cmd + ["pull", svc]
+        ok, output = run_command(cmd, cwd=TEMP_DIR, capture=True, timeout=timeout)
+        if not ok:
+            logger.error(f"  Failed to pull image for {svc}")
+            failed.append(svc)
+
+    return len(failed) == 0, failed
+
+
+def docker_compose_unified(action: str, compose_file: Path = None, build: bool = False,
+                           no_recreate: bool = False, timeout: int = 300) -> bool:
     """Execute docker compose with unified file.
 
     Args:
         action: The docker compose action (up, down, restart, etc.)
         compose_file: Path to compose file (default: .temp/docker-compose.yml)
-        build: Whether to build images on 'up' action (default: True)
+        build: Whether to build images on 'up' action (default: False)
+        no_recreate: Don't recreate existing containers on 'up' (default: False)
         timeout: Command timeout in seconds (default: 300)
     """
     if compose_file is None:
@@ -452,6 +476,8 @@ def docker_compose_unified(action: str, compose_file: Path = None, build: bool =
         cmd.extend(["up", "-d", "--remove-orphans"])
         if build:
             cmd.append("--build")
+        if no_recreate:
+            cmd.append("--no-recreate")
     elif action == "down":
         cmd.extend(["down", "--remove-orphans"])
     elif action == "restart":
@@ -791,6 +817,13 @@ def cmd_up(args):
     current = set(state.get("active", []))
     requested = set(args.services)
 
+    # Validate services exist
+    not_found = [n for n in requested if not find_service(n, services)]
+    if not_found:
+        logger.error(f"Services not found: {', '.join(not_found)}")
+        logger.info("Use 'deploy.py list' to see available services")
+        return
+
     # Check existing services
     if current and current != requested and not args.force:
         logger.warning(f"Active services: {', '.join(current)}")
@@ -819,6 +852,18 @@ def cmd_up(args):
     generate_env_file()
     compose_file = generate_unified_compose(all_to_start, services)
 
+    # Pre-pull all images (fail fast if any image doesn't exist)
+    logger.info("Pulling images...")
+    all_compose_services = []
+    for name in all_to_start - core_services:
+        all_compose_services.extend(get_compose_service_names(name, services))
+    if all_compose_services:
+        pull_ok, failed = pull_service_images(compose_file, all_compose_services)
+        if not pull_ok:
+            logger.error(f"Image pull failed for: {', '.join(failed)}")
+            logger.error("Fix the image references and try again.")
+            return
+
     # Execute
     if docker_compose_unified("up", compose_file):
         logger.success("Services started")
@@ -841,6 +886,24 @@ def cmd_up(args):
             logger.info(f"  - http://{name}.127.0.0.1.traefik.me:9000")
 
 
+def get_compose_service_names(service_name: str, all_services: dict) -> List[str]:
+    """Get the docker-compose service names defined by a module.
+
+    A module like 'kroki' may define multiple compose services (kroki, mermaid, bpmn).
+    Returns the list of service names from the module's docker-compose.yml.
+    """
+    service = find_service(service_name, all_services)
+    if not service:
+        return []
+    compose_file = service["path"] / "docker-compose.yml"
+    if not compose_file.exists():
+        return []
+    compose = load_yaml(compose_file)
+    if not compose or "services" not in compose:
+        return []
+    return list(compose["services"].keys())
+
+
 def cmd_add(args):
     """Add services to existing ones."""
     ensure_network()
@@ -848,6 +911,16 @@ def cmd_add(args):
     state = load_state()
     current = set(state.get("active", []))
     requested = set(args.services)
+
+    # Validate services exist
+    not_found = []
+    for name in requested:
+        if not find_service(name, services):
+            not_found.append(name)
+    if not_found:
+        logger.error(f"Services not found: {', '.join(not_found)}")
+        logger.info("Use 'deploy.py list' to see available services")
+        return
 
     # Resolve new dependencies
     new_to_add = set()
@@ -870,24 +943,36 @@ def cmd_add(args):
     core_services = set(services["core"].keys())
     all_services_set.update(core_services)
 
-    # Update state FIRST (before docker compose, so it's saved even if compose hangs)
-    current.update(new_to_add)
-    state["active"] = list(current)
-    save_state(state)
-    logger.info("State saved")
-
-    # Generate unified compose
+    # Generate unified compose FIRST (needed for pull)
     generate_env_file()
     compose_file = generate_unified_compose(all_services_set, services)
 
-    # Execute docker compose (no --build, we use pre-built images)
+    # Pre-pull images for NEW services only (fail fast if image doesn't exist)
+    logger.info("Pulling images for new services...")
+    new_compose_services = []
+    for name in new_to_add:
+        new_compose_services.extend(get_compose_service_names(name, services))
+
+    if new_compose_services:
+        pull_ok, failed = pull_service_images(compose_file, new_compose_services)
+        if not pull_ok:
+            logger.error(f"Image pull failed for: {', '.join(failed)}")
+            logger.error("Fix the image references and try again. State NOT updated.")
+            return
+
+    # Start containers (--no-recreate: don't touch already running services)
     logger.info("Starting containers...")
-    if docker_compose_unified("up", compose_file):
+    if docker_compose_unified("up", compose_file, no_recreate=True):
         logger.success("Services added")
     else:
-        logger.warning("Docker compose had issues, but state is saved")
+        logger.warning("Docker compose had issues starting containers")
 
-    # Regenerate dashboards (always, even if compose had issues)
+    # Save state AFTER success
+    current.update(new_to_add)
+    state["active"] = list(current)
+    save_state(state)
+
+    # Regenerate dashboards
     logger.info("Updating dashboards...")
     regenerate_all_dashboards(state["active"], services)
 

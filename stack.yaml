@@ -1,0 +1,316 @@
+# ─── Infrastructure Dependency Manifest ─────────────────────────────────────
+# Declara grupos de servicios y sus dependencias de arranque.
+# Uso: python stack.py up | down | status | list | deps <servicio>
+#
+# Tier ordering: los grupos con el mismo `order` arrancan en paralelo.
+# wait_for: el CLI espera a que ese host:port acepte TCP antes de hacer
+#           `docker compose up` para los servicios del grupo.
+# ─────────────────────────────────────────────────────────────────────────────
+version: "1"
+
+# ── Condiciones de espera reutilizables ───────────────────────────────────────
+# Referenciadas por los servicios via `wait_for: [clave]`
+wait_conditions:
+  postgres:
+    host: postgres-infra
+    port: 5432
+  mariadb:
+    host: mariadb-infra
+    port: 3306
+  mongodb:
+    host: mongodb-infra
+    port: 27017
+  redis:
+    host: redis-infra
+    port: 6379
+  minio:
+    host: minio-infra
+    port: 9000
+
+# ── Grupos de servicios ───────────────────────────────────────────────────────
+groups:
+
+  # ── Tier 1: Red y proxy ─────────────────────────────────────────────────────
+  network:
+    order: 1
+    description: "Reverse proxy — debe arrancar primero"
+    services:
+      traefik:
+        path: core/traefik
+        containers: [traefik-infra]
+
+  # ── Tier 2: Persistencia — sin dependencias externas ─────────────────────────
+  databases:
+    order: 2
+    description: "Bases de datos: postgres, mariadb, mongodb, redis"
+    services:
+      postgres:
+        path: infra/databases/postgres
+        containers: [postgres-infra, pgadmin-infra]
+        provides: [postgres]          # este servicio satisface la condición 'postgres'
+      mariadb:
+        path: infra/databases/mariadb
+        containers: [mariadb-infra]
+        provides: [mariadb]
+      mongodb:
+        path: infra/databases/mongodb
+        containers: [mongodb-infra]
+        provides: [mongodb]
+      redis:
+        path: infra/databases/redis
+        containers: [redis-infra, redis-commander-infra]
+        provides: [redis]
+
+  # ── Tier 3: Data & pipelines — dependen de postgres ──────────────────────────
+  data:
+    order: 3
+    description: "Data warehouse, pipelines y analytics"
+    services:
+      trino:
+        path: modules/data/trino
+        containers: [minio-infra, nessie-infra, trino-infra]
+        wait_for: [postgres]          # Nessie usa postgres como backend
+        provides: [minio]
+      airflow:
+        path: modules/data/airflow
+        containers: [airflow-infra, airflow-scheduler-infra]
+        wait_for: [postgres]
+      dagster:
+        path: modules/data/dagster
+        containers: [dagster-infra, dagster-daemon-infra]
+        wait_for: [postgres]
+      prefect:
+        path: modules/data/prefect
+        containers: [prefect-infra, prefect-worker-infra]
+        wait_for: [postgres]
+      superset:
+        path: modules/data/superset
+        containers: [superset-infra]
+        wait_for: [postgres, redis]
+      windmill:
+        path: modules/data/windmill
+        containers: [windmill-infra]
+        wait_for: [postgres]
+      nocodb:
+        path: modules/data/nocodb
+        containers: [nocodb-infra]
+        wait_for: [postgres]
+
+  # ── Tier 3: Developer portal — dependen de postgres ──────────────────────────
+  developer:
+    order: 3
+    description: "Developer portal y herramientas"
+    services:
+      backstage:
+        path: modules/developer/backstage
+        containers: [backstage-infra]
+        wait_for: [postgres]          # ya tiene wait interno pero lo declaramos igual
+      code-server:
+        path: modules/developer/code-server
+        containers: [code-server-infra]
+      jupyter:
+        path: modules/developer/jupyter
+        containers: [jupyter-infra]
+      hoppscotch:
+        path: modules/developer/hoppscotch
+        containers: [hoppscotch-infra]
+      lighthouse:
+        path: modules/developer/lighthouse
+        containers: [lhci-server-infra]
+
+  # ── Tier 3: Aplicaciones corporativas ─────────────────────────────────────────
+  apps:
+    order: 3
+    description: "ERP, CRM y apps de negocio"
+    services:
+      odoo:
+        path: modules/corporativo/odoo
+        containers: [odoo-infra]
+        wait_for: [postgres]
+      n8n:
+        path: modules/automation/n8n
+        containers: [n8n-infra]
+        wait_for: [postgres]
+      dolibarr:
+        path: modules/corporativo/dolibarr
+        containers: [dolibarr-infra]
+        wait_for: [mariadb]
+      openproject:
+        path: modules/corporativo/openproject
+        containers: [openproject-infra]
+        wait_for: [postgres]
+      mautic:
+        path: modules/corporativo/mautic
+        containers: [mautic-infra]
+        wait_for: [mariadb]
+      suitecrm:
+        path: modules/corporativo/suitecrm
+        containers: [suitecrm-infra]
+        wait_for: [mariadb]
+
+  # ── Tier 3: DevOps ────────────────────────────────────────────────────────────
+  devops:
+    order: 3
+    description: "CI/CD, registry y code quality"
+    services:
+      sonarqube:
+        path: modules/devops/sonarqube
+        containers: [sonarqube-infra]
+        wait_for: [postgres]
+      gitlab:
+        path: modules/devops/gitlab
+        containers: [gitlab-infra]
+        # gitlab trae su propio postgres/redis internos
+      nexus:
+        path: modules/devops/nexus
+        containers: [nexus-infra]
+      argocd:
+        path: modules/devops/argocd
+        containers: [argocd-infra]
+      keycloak:
+        path: modules/auth/keycloak
+        containers: [keycloak-infra]
+        wait_for: [postgres]
+
+  # ── Tier 3: Monitoring ────────────────────────────────────────────────────────
+  monitoring:
+    order: 3
+    description: "Métricas, logs, trazas y alertas"
+    services:
+      prometheus:
+        path: modules/monitoring/prometheus
+        containers: [prometheus-infra]
+      loki:
+        path: modules/monitoring/loki
+        containers: [loki-infra]
+      tempo:
+        path: modules/monitoring/tempo
+        containers: [tempo-infra]
+      grafana:
+        path: modules/monitoring/grafana
+        containers: [grafana-infra]
+      netdata:
+        path: modules/monitoring/netdata
+        containers: [netdata-infra]
+      uptime-kuma:
+        path: modules/monitoring/uptime-kuma
+        containers: [uptime-kuma-infra]
+      gatus:
+        path: modules/monitoring/gatus
+        containers: [gatus-infra]
+      node-exporter:
+        path: modules/monitoring/node-exporter
+        containers: [node-exporter-infra]
+
+  # ── Tier 3: Editores y herramientas ──────────────────────────────────────────
+  editors:
+    order: 3
+    description: "Editores online y herramientas dev"
+    services:
+      swagger-editor:
+        path: modules/editors/swagger-editor
+        containers: [swagger-editor-infra]
+      asyncapi:
+        path: modules/editors/asyncapi
+        containers: [asyncapi-infra]
+      drawio:
+        path: modules/editors/drawio
+        containers: [drawio-infra]
+      excalidraw:
+        path: modules/editors/excalidraw
+        containers: [excalidraw-infra]
+      hedgedoc:
+        path: modules/editors/hedgedoc
+        containers: [hedgedoc-infra]
+        wait_for: [postgres]
+      kroki:
+        path: modules/editors/kroki
+        containers: [kroki-infra]
+      it-tools:
+        path: modules/editors/it-tools
+        containers: [it-tools-infra]
+      jsoncrack:
+        path: modules/editors/jsoncrack
+        containers: [jsoncrack-infra]
+
+  # ── Tier 3: Dashboards ────────────────────────────────────────────────────────
+  dashboards:
+    order: 3
+    description: "Paneles de control y portales"
+    services:
+      portainer:
+        path: core/portainer
+        containers: [portainer-infra]
+      dashy:
+        path: core/dashy
+        containers: [dashy-infra]
+      heimdall:
+        path: core/heimdall
+        containers: [heimdall-infra]
+      homepage:
+        path: core/homepage
+        containers: [homepage-infra]
+
+  # ── Tier 4: Wikis — dependen de postgres ──────────────────────────────────────
+  wiki:
+    order: 4
+    description: "Wikis y documentación colaborativa"
+    services:
+      wikijs:
+        path: modules/wiki/wikijs
+        containers: [wikijs-infra]
+        wait_for: [postgres]
+      outline:
+        path: modules/wiki/outline
+        containers: [outline-infra]
+        wait_for: [postgres, redis]
+      affine:
+        path: modules/wiki/affine
+        containers: [affine-infra]
+        wait_for: [postgres, redis]
+        traefik_url: http://affine.127.0.0.1.traefik.me:9000
+
+  # ── Tier 4: Opcionales / Bajo demanda ─────────────────────────────────────────
+  # Estos grupos no se inician con `stack up` sino con `stack up <grupo>` explícito.
+  ai:
+    order: 4
+    optional: true
+    description: "AI: Ollama, Open-WebUI, Dify, AnythingLLM..."
+    services:
+      ollama:
+        path: modules/ai/ollama
+        containers: [ollama-infra]
+      open-webui:
+        path: modules/ai/open-webui
+        containers: [open-webui-infra]
+      dify:
+        path: modules/ai/dify
+        containers: [dify-api-infra]
+        wait_for: [postgres, redis]
+      flowise:
+        path: modules/ai/flowise
+        containers: [flowise-infra]
+        wait_for: [postgres]
+      langfuse:
+        path: modules/ai/langfuse
+        containers: [langfuse-infra]
+        wait_for: [postgres]
+
+  iot:
+    order: 4
+    optional: true
+    description: "IoT: Node-RED, Home Assistant, ThingsBoard..."
+    services:
+      node-red:
+        path: modules/iot/node-red
+        containers: [node-red-infra]
+      home-assistant:
+        path: modules/iot/home-assistant
+        containers: [home-assistant-infra]
+      thingsboard:
+        path: modules/iot/thingsboard
+        containers: [thingsboard-infra]
+        wait_for: [postgres]
+      frigate:
+        path: modules/iot/frigate
+        containers: [frigate-infra]

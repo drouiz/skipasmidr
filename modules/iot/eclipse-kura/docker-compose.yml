@@ -1,3 +1,7 @@
+# NOTE: eclipse/kura requires Docker Hub authentication to pull.
+# Run: docker login
+# before deploying this service.
+
 services:
   kura:
     image: eclipse/kura:${KURA_VERSION:-latest}

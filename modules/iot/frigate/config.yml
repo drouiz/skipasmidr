@@ -2,15 +2,18 @@ mqtt:
   enabled: false
 
 cameras:
-  # Añadir camaras aqui
-  # ejemplo:
-  #   ffmpeg:
-  #     inputs:
-  #       - path: rtsp://user:pass@ip:554/stream
-  #         roles:
-  #           - detect
-  #           - record
-  #   detect:
-  #     enabled: true
-  #     width: 1280
-  #     height: 720
+  # Camara dummy para validacion - reemplazar con camaras reales
+  dummy_cam:
+    enabled: false
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/dummy
+          roles:
+            - detect
+    detect:
+      enabled: false
+      width: 640
+      height: 480
+detect:
+  enabled: true
+version: 0.16-0

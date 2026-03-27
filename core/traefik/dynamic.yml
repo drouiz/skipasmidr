@@ -63,6 +63,27 @@ http:
         - web
       service: dagster
 
+    # MinIO Console (Object Storage UI)
+    minio-console:
+      rule: "Host(`minio.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: minio-console
+
+    # MinIO S3 API
+    minio-s3:
+      rule: "Host(`s3.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: minio-s3
+
+    # Nessie (Iceberg Catalog)
+    nessie:
+      rule: "Host(`nessie.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: nessie
+
     # Trino (SQL Query Engine)
     trino:
       rule: "Host(`trino.127.0.0.1.traefik.me`)"
@@ -140,6 +161,55 @@ http:
         - web
       service: grafana
 
+    # Prometheus (Metrics)
+    prometheus:
+      rule: "Host(`prometheus.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: prometheus
+
+    # Loki (Log Aggregation)
+    loki:
+      rule: "Host(`loki.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: loki
+
+    # Netdata (Real-time Monitoring)
+    netdata:
+      rule: "Host(`netdata.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: netdata
+
+    # Node Exporter (System Metrics)
+    node-exporter:
+      rule: "Host(`node-exporter.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: node-exporter
+
+    # Tempo (Distributed Tracing)
+    tempo:
+      rule: "Host(`tempo.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: tempo
+
+    # Uptime Kuma (Status Monitoring)
+    uptime-kuma:
+      rule: "Host(`uptime.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: uptime-kuma
+
+    # Gatus (Health Dashboard)
+    gatus:
+      rule: "Host(`gatus.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: gatus
+
     # Code Server (VS Code in browser)
     code-server:
       rule: "Host(`code-server.127.0.0.1.traefik.me`) || Host(`code.127.0.0.1.traefik.me`)"
@@ -167,6 +237,13 @@ http:
       entryPoints:
         - web
       service: jupyter
+
+    # Backstage (Developer Portal)
+    backstage:
+      rule: "Host(`backstage.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: backstage
 
     # Prefect (Workflow Orchestration)
     prefect:
@@ -202,6 +279,13 @@ http:
       entryPoints:
         - web
       service: swagger
+
+    # AsyncAPI Studio (Async API Documentation)
+    asyncapi:
+      rule: "Host(`asyncapi.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: asyncapi
 
     # Draw.io (Diagrams)
     drawio:
@@ -287,6 +371,62 @@ http:
         - web
       service: jfrog
 
+    # Mailu (Email)
+    mailu:
+      rule: "Host(`mail.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: mailu
+
+    # Frigate (NVR/Camera)
+    frigate:
+      rule: "Host(`frigate.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: frigate
+
+    # Balena (IoT Fleet Management)
+    balena:
+      rule: "Host(`balena.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: balena
+
+    # Eclipse Kura (IoT Gateway)
+    kura:
+      rule: "Host(`kura.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: kura
+
+    # OpenRemote (IoT Platform)
+    openremote:
+      rule: "Host(`openremote.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: openremote
+
+    # Node-RED (Flow-based IoT)
+    nodered:
+      rule: "Host(`nodered.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: nodered
+
+    # Home Assistant (Smart Home)
+    home-assistant:
+      rule: "Host(`hass.127.0.0.1.traefik.me`) || Host(`home-assistant.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: home-assistant
+
+    # ThingsBoard (IoT Platform)
+    thingsboard:
+      rule: "Host(`thingsboard.127.0.0.1.traefik.me`)"
+      entryPoints:
+        - web
+      service: thingsboard
+
   services:
     dashy:
       loadBalancer:
@@ -327,6 +467,21 @@ http:
       loadBalancer:
         servers:
           - url: "http://dagster-infra:3000"
+
+    minio-console:
+      loadBalancer:
+        servers:
+          - url: "http://minio-infra:9001"
+
+    minio-s3:
+      loadBalancer:
+        servers:
+          - url: "http://minio-infra:9000"
+
+    nessie:
+      loadBalancer:
+        servers:
+          - url: "http://nessie-infra:19120"
 
     trino:
       loadBalancer:
@@ -383,6 +538,41 @@ http:
         servers:
           - url: "http://grafana-infra:3000"
 
+    prometheus:
+      loadBalancer:
+        servers:
+          - url: "http://prometheus-infra:9090"
+
+    loki:
+      loadBalancer:
+        servers:
+          - url: "http://loki-infra:3100"
+
+    netdata:
+      loadBalancer:
+        servers:
+          - url: "http://netdata-infra:19999"
+
+    node-exporter:
+      loadBalancer:
+        servers:
+          - url: "http://node-exporter-infra:9100"
+
+    tempo:
+      loadBalancer:
+        servers:
+          - url: "http://tempo-infra:3200"
+
+    uptime-kuma:
+      loadBalancer:
+        servers:
+          - url: "http://uptime-kuma-infra:3001"
+
+    gatus:
+      loadBalancer:
+        servers:
+          - url: "http://gatus-infra:8080"
+
     code-server:
       loadBalancer:
         servers:
@@ -402,6 +592,11 @@ http:
       loadBalancer:
         servers:
           - url: "http://jupyter-infra:8888"
+
+    backstage:
+      loadBalancer:
+        servers:
+          - url: "http://backstage-infra:7007"
 
     prefect:
       loadBalancer:
@@ -427,6 +622,11 @@ http:
       loadBalancer:
         servers:
           - url: "http://swagger-editor-infra:80"
+
+    asyncapi:
+      loadBalancer:
+        servers:
+          - url: "http://asyncapi-infra:80"
 
     drawio:
       loadBalancer:
@@ -487,3 +687,43 @@ http:
       loadBalancer:
         servers:
           - url: "http://jfrog-infra:8082"
+
+    mailu:
+      loadBalancer:
+        servers:
+          - url: "http://mailu-infra:8025"
+
+    frigate:
+      loadBalancer:
+        servers:
+          - url: "http://frigate-infra:5000"
+
+    balena:
+      loadBalancer:
+        servers:
+          - url: "http://balena-api-infra:80"
+
+    kura:
+      loadBalancer:
+        servers:
+          - url: "http://kura-infra:8080"
+
+    openremote:
+      loadBalancer:
+        servers:
+          - url: "http://openremote-infra:8080"
+
+    nodered:
+      loadBalancer:
+        servers:
+          - url: "http://node-red-infra:1880"
+
+    home-assistant:
+      loadBalancer:
+        servers:
+          - url: "http://home-assistant-infra:8123"
+
+    thingsboard:
+      loadBalancer:
+        servers:
+          - url: "http://thingsboard-infra:9090"

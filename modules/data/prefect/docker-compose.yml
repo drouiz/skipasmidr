@@ -1,16 +1,16 @@
 services:
   prefect-server:
-    image: prefecthq/prefect:${PREFECT_VERSION:-2-latest}
+    image: prefecthq/prefect:${PREFECT_VERSION:-3-latest}
     container_name: prefect-infra
     restart: unless-stopped
     command: prefect server start
     environment:
       PREFECT_SERVER_API_HOST: 0.0.0.0
       PREFECT_API_DATABASE_CONNECTION_URL: postgresql+asyncpg://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin123}@postgres-infra:5432/${PREFECT_DB:-prefect}
-      PYTHONPATH: /opt/prefect/code/libs
+      # URL pública de la API — el UI del browser la usa para conectar vía Traefik
+      PREFECT_UI_API_URL: http://prefect.127.0.0.1.traefik.me:9000/api
     volumes:
       - prefect-data:/root/.prefect
-      - ../../../code:/opt/prefect/code:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prefect.rule=Host(`prefect.127.0.0.1.traefik.me`)"
@@ -19,15 +19,24 @@ services:
       - infra-network
 
   prefect-worker:
-    image: prefecthq/prefect:${PREFECT_VERSION:-2-latest}
+    image: prefecthq/prefect:${PREFECT_VERSION:-3-latest}
     container_name: prefect-worker-infra
     restart: unless-stopped
-    command: prefect worker start -p default-pool
+    entrypoint:
+      - sh
+      - -c
+      - "pip install requests pandas pyarrow pyyaml && prefect worker start -p default-pool"
     environment:
       PREFECT_API_URL: http://prefect-infra:4200/api
-      PYTHONPATH: /opt/prefect/code/libs
+      PYTHONPATH: /opt/prefect/code
+      AEMET_API_KEY: ${AEMET_API_KEY}
+      CONFIG_PATH: /opt/data/config.yaml
+      DATA_OUTPUT_DIR: /opt/data/prefect
     volumes:
-      - ../../../code:/opt/prefect/code
+      # Código: flows/ queda en /opt/prefect/code/flows
+      - ../../../../data/prefect:/opt/prefect/code:ro
+      # Carpeta data/ completa para config.yaml y output compartido
+      - ../../../../data:/opt/data:rw
     networks:
       - infra-network
     depends_on:

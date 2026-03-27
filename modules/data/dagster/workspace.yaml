@@ -1,4 +1,16 @@
-# Dagster workspace configuration
-# Add your code locations here
+# Dagster workspace — carga todos los paquetes desde el volumen montado
+# El código vive en /opt/dagster/code/ (montado desde data/dagster/)
+# PYTHONPATH=/opt/dagster/code  →  import aemet_project, hello_world, ree_project
 
-load_from: []
+load_from:
+  - python_package:
+      package_name: aemet_project
+      working_directory: /opt/dagster/code
+
+  - python_package:
+      package_name: hello_world
+      working_directory: /opt/dagster/code
+
+  - python_package:
+      package_name: ree_project
+      working_directory: /opt/dagster/code

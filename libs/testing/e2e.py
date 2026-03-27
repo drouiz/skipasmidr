@@ -155,14 +155,29 @@ class E2ETest:
             message = "OK"
         elif 300 <= http_code < 400:
             if accept_redirects:
-                status = TestStatus.REDIRECT
-                message = f"Redirects to {redirect_url}" if redirect_url else "Redirect"
+                # Follow redirect and check final destination
+                final_code, final_time, _ = self._curl_test(url, follow_redirects=True, use_get=True)
+                dest = redirect_url or "?"
+                if final_code == 0:
+                    status = TestStatus.FAIL
+                    message = f"Redirect destination unreachable (→ {dest})"
+                elif 200 <= final_code < 300 or final_code in (400, 405, 406):
+                    status = TestStatus.PASS
+                    message = f"OK (→ {dest})"
+                    response_time = final_time or response_time
+                else:
+                    status = TestStatus.FAIL
+                    message = f"Redirect destination HTTP {final_code} (→ {dest})"
             else:
                 status = TestStatus.FAIL
                 message = "Unexpected redirect"
         elif http_code == 404:
             status = TestStatus.FAIL
             message = "Not Found - Check Traefik routing"
+        elif http_code == 400:
+            # Bad Request - service is up but rejects the request format
+            status = TestStatus.PASS
+            message = "OK (rejects HEAD/GET but service is up)"
         elif http_code in (405, 406):
             # Method Not Allowed / Not Acceptable - service is up
             status = TestStatus.PASS
@@ -246,6 +261,29 @@ class E2ETest:
     def _test_grafana(self) -> TestResult:
         return self._test_service("Grafana", self._build_url("grafana"))
 
+    def _test_prometheus(self) -> TestResult:
+        return self._test_service("Prometheus", self._build_url("prometheus"))
+
+    def _test_loki(self) -> TestResult:
+        url = f"{self._build_url('loki')}/loki/api/v1/status/buildinfo"
+        return self._test_service("Loki", url, use_get=True)
+
+    def _test_netdata(self) -> TestResult:
+        return self._test_service("Netdata", self._build_url("netdata"))
+
+    def _test_node_exporter(self) -> TestResult:
+        return self._test_service("Node Exporter", f"{self._build_url('node-exporter')}/metrics", use_get=True)
+
+    def _test_tempo(self) -> TestResult:
+        url = f"{self._build_url('tempo')}/ready"
+        return self._test_service("Tempo", url, use_get=True)
+
+    def _test_uptime_kuma(self) -> TestResult:
+        return self._test_service("Uptime Kuma", self._build_url("uptime"))
+
+    def _test_gatus(self) -> TestResult:
+        return self._test_service("Gatus", self._build_url("gatus"))
+
     # DEVELOPER
     def _test_code_server(self) -> TestResult:
         return self._test_service("Code Server", self._build_url("code"))
@@ -306,6 +344,9 @@ class E2ETest:
     def _test_it_tools(self) -> TestResult:
         return self._test_service("IT-Tools", self._build_url("tools"))
 
+    def _test_asyncapi(self) -> TestResult:
+        return self._test_service("AsyncAPI Studio", self._build_url("asyncapi"))
+
     # DOCUMENTS
     def _test_paperless(self) -> TestResult:
         return self._test_service("Paperless", self._build_url("paperless"))
@@ -313,12 +354,40 @@ class E2ETest:
     def _test_tandoor(self) -> TestResult:
         return self._test_service("Tandoor", self._build_url("tandoor"))
 
-    # DATA (missing)
+    # DATA (extra)
     def _test_prefect(self) -> TestResult:
         return self._test_service("Prefect", self._build_url("prefect"))
 
     def _test_jupyter(self) -> TestResult:
         return self._test_service("Jupyter", self._build_url("jupyter"))
+
+    # EMAIL
+    def _test_mailu(self) -> TestResult:
+        return self._test_service("Mailu", self._build_url("mail"))
+
+    # IOT
+    def _test_frigate(self) -> TestResult:
+        return self._test_service("Frigate", self._build_url("frigate"))
+
+    def _test_balena(self) -> TestResult:
+        return self._test_service("Balena", self._build_url("balena"))
+
+    def _test_eclipse_kura(self) -> TestResult:
+        return self._test_service("Eclipse Kura", self._build_url("kura"))
+
+    def _test_openremote(self) -> TestResult:
+        return self._test_service("OpenRemote", self._build_url("openremote"))
+
+    def _test_node_red(self) -> TestResult:
+        return self._test_service("Node-RED", self._build_url("nodered"))
+
+    def _test_home_assistant(self) -> TestResult:
+        return self._test_service(
+            "Home Assistant", self._build_url("hass")
+        )
+
+    def _test_thingsboard(self) -> TestResult:
+        return self._test_service("ThingsBoard", self._build_url("thingsboard"))
 
     # === Public methods ===
 
@@ -429,6 +498,13 @@ class E2ETest:
             "hoppscotch": self._test_hoppscotch,
             # MONITORING
             "grafana": self._test_grafana,
+            "prometheus": self._test_prometheus,
+            "loki": self._test_loki,
+            "netdata": self._test_netdata,
+            "node-exporter": self._test_node_exporter,
+            "tempo": self._test_tempo,
+            "uptime-kuma": self._test_uptime_kuma,
+            "gatus": self._test_gatus,
             # DEVOPS
             "nexus": self._test_nexus,
             "harbor": self._test_harbor,
@@ -446,12 +522,25 @@ class E2ETest:
             "swagger-editor": self._test_swagger,
             "jsoncrack": self._test_jsoncrack,
             "it-tools": self._test_it_tools,
+            "asyncapi": self._test_asyncapi,
             # DOCUMENTS
             "paperless": self._test_paperless,
             "tandoor": self._test_tandoor,
             # DATA (extra)
             "prefect": self._test_prefect,
             "jupyter": self._test_jupyter,
+            # EMAIL
+            "mailu": self._test_mailu,
+            # IOT
+            "frigate": self._test_frigate,
+            "balena": self._test_balena,
+            "eclipse-kura": self._test_eclipse_kura,
+            "openremote": self._test_openremote,
+            "node-red": self._test_node_red,
+            "nodered": self._test_node_red,
+            "home-assistant": self._test_home_assistant,
+            "home-assistand": self._test_home_assistant,
+            "thingsboard": self._test_thingsboard,
         }
 
         # Core services are always tested
@@ -526,6 +615,20 @@ class E2ETest:
             mon_tests = []
             if "grafana" in active_set:
                 mon_tests.append(self._test_grafana)
+            if "prometheus" in active_set:
+                mon_tests.append(self._test_prometheus)
+            if "loki" in active_set:
+                mon_tests.append(self._test_loki)
+            if "netdata" in active_set:
+                mon_tests.append(self._test_netdata)
+            if "node-exporter" in active_set:
+                mon_tests.append(self._test_node_exporter)
+            if "tempo" in active_set:
+                mon_tests.append(self._test_tempo)
+            if "uptime-kuma" in active_set:
+                mon_tests.append(self._test_uptime_kuma)
+            if "gatus" in active_set:
+                mon_tests.append(self._test_gatus)
 
             # Filter devops tests
             devops_tests = []
@@ -560,6 +663,8 @@ class E2ETest:
                 editor_tests.append(self._test_jsoncrack)
             if "it-tools" in active_set:
                 editor_tests.append(self._test_it_tools)
+            if "asyncapi" in active_set:
+                editor_tests.append(self._test_asyncapi)
 
             # Filter document tests
             doc_tests = []
@@ -567,6 +672,29 @@ class E2ETest:
                 doc_tests.append(self._test_paperless)
             if "tandoor" in active_set:
                 doc_tests.append(self._test_tandoor)
+
+            # Filter email tests
+            email_tests = []
+            if "mailu" in active_set:
+                email_tests.append(self._test_mailu)
+
+            # Filter IOT tests
+            iot_tests = []
+            if "frigate" in active_set:
+                iot_tests.append(self._test_frigate)
+            if "balena" in active_set:
+                iot_tests.append(self._test_balena)
+            if "eclipse-kura" in active_set:
+                iot_tests.append(self._test_eclipse_kura)
+            if "openremote" in active_set:
+                iot_tests.append(self._test_openremote)
+            if "node-red" in active_set or "nodered" in active_set:
+                iot_tests.append(self._test_node_red)
+            if ("home-assistant" in active_set
+                    or "home-assistand" in active_set):
+                iot_tests.append(self._test_home_assistant)
+            if "thingsboard" in active_set:
+                iot_tests.append(self._test_thingsboard)
 
             tests_to_run = [
                 ("CORE", core_tests),
@@ -587,6 +715,10 @@ class E2ETest:
                 tests_to_run.append(("EDITORS", editor_tests))
             if doc_tests:
                 tests_to_run.append(("DOCUMENTS", doc_tests))
+            if email_tests:
+                tests_to_run.append(("EMAIL", email_tests))
+            if iot_tests:
+                tests_to_run.append(("IOT", iot_tests))
 
         if verbose:
             logger.info("=" * 50)
@@ -642,8 +774,18 @@ class E2ETest:
 
 def run_tests():
     """CLI entry point for running tests."""
+    # Read active services from .state.json (two levels up from libs/testing/)
+    state_file = Path(__file__).parent.parent.parent / ".state.json"
+    active_services = None
+    if state_file.exists():
+        try:
+            with open(state_file, encoding="utf-8") as f:
+                active_services = json.load(f).get("active")
+        except Exception:
+            pass
+
     tester = E2ETest()
-    report = tester.test_all()
+    report = tester.test_all(active_services=active_services)
     exit(0 if report.failed == 0 else 1)
 
 
